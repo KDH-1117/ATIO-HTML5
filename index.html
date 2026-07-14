@@ -1,266 +1,77 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI DETECTOR</title>
+  <meta charset="UTF-8"><title>AI DETECTOR</title>
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-    
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
     body { background-color: #050505; color: #ededed; height: 100vh; overflow: hidden; }
-    
-    input, select, textarea { width: 100%; background: #111; border: 1px solid #222; color: #fff; padding: 16px; border-radius: 8px; font-size: 14px; outline: none; transition: border 0.2s ease; margin-bottom: 16px; }
-    input:focus, select:focus, textarea:focus { border-color: #444; }
-    button { width: 100%; background: #fff; color: #000; padding: 16px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-    button:hover { opacity: 0.8; }
-    button:disabled { background: #333; color: #666; cursor: not-allowed; }
-
-    .view { display: none; }
+    input, textarea { width: 100%; background: #111; border: 1px solid #222; color: #fff; padding: 16px; border-radius: 8px; margin-bottom: 16px; outline: none; }
+    button { width: 100%; background: #fff; color: #000; padding: 16px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .view { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; }
     .view.active { display: flex; }
-
-    /* 로그인 화면 */
-    #loginView { flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-    .login-box { width: 100%; max-width: 400px; padding: 32px; }
-    .login-box h1 { font-size: 24px; font-weight: 700; margin-bottom: 32px; text-align: center; }
-    #licenseInput { font-family: monospace; font-size: 16px; letter-spacing: 1px; text-align: center; }
-
-    /* 대시보드 레이아웃 */
-    #appView { height: 100vh; width: 100%; display: none; }
-    #appView.active { display: flex; }
-
-    /* 사이드바 */
-    .sidebar { width: 240px; background: #0a0a0a; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 24px; height: 100vh; }
-    .brand { font-size: 18px; font-weight: 700; margin-bottom: 40px; padding: 0 12px; }
-    .menu { flex: 1; }
-    .menu-item { padding: 12px; margin-bottom: 8px; color: #777; font-size: 14px; font-weight: 500; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
-    .menu-item:hover { color: #fff; background: #111; }
-    .menu-item.active { color: #fff; background: #1a1a1a; }
-    
-    .logout-container { margin-top: auto; padding-top: 16px; border-top: 1px solid #1a1a1a; }
-    .logout-btn { color: #888; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.2s; text-align: left; background: transparent; border: none; width: 100%; }
-    .logout-btn:hover { color: #ff4d4d; background: #1a0a0a; }
-
-    /* 메인 화면 */
-    .main-content { flex: 1; padding: 48px; overflow-y: auto; background: #050505; }
-    .content-container { max-width: 720px; margin: 0 auto; }
-    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 24px; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    /* 통계 */
-    .char-stats { display: flex; gap: 16px; margin-bottom: 16px; }
-    .stat-box { flex: 1; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-    .stat-label { font-size: 13px; color: #777; margin-bottom: 8px; }
-    .stat-value { font-size: 28px; font-weight: 700; color: #fff; font-family: monospace; }
-    textarea { height: 280px; resize: none; line-height: 1.6; }
-    
-    .result-box { margin-top: 24px; padding: 32px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; text-align: center; display: none; }
-    .result-label { font-size: 12px; color: #777; margin-bottom: 12px; letter-spacing: 1px; }
-    .result-score { font-size: 48px; font-weight: 700; color: #fff; }
-
-    /* 프로필 */
+    #appView { flex-direction: row; align-items: flex-start; justify-content: flex-start; }
+    .sidebar { width: 240px; background: #0a0a0a; border-right: 1px solid #1a1a1a; height: 100%; padding: 24px; }
+    .main-content { flex: 1; padding: 48px; overflow-y: auto; }
+    .tab-content { display: none; } .tab-content.active { display: block; }
     .profile-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 24px; }
-    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #141414; font-size: 14px; }
-    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .info-label { color: #777; }
-    .info-value { color: #fff; font-family: monospace; font-size: 15px; }
-    
-    /* 🔑 라이선스 키 마스킹 관련 스타일 */
-    .license-wrap { display: flex; align-items: center; gap: 8px; }
-    .icon-btn { background: transparent; border: none; color: #555; width: auto; padding: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
-    .icon-btn:hover { color: #fff; }
-    
-    .badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; background: #222; }
-    .badge.admin { background: #5c2018; color: #ff8a80; }
-    .badge.user { background: #1e3a5f; color: #82b1ff; }
-    .unlimited-text { color: #4ade80 !important; font-weight: 700; }
+    .info-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #141414; }
+    .result-box { margin-top: 24px; padding: 32px; background: #0a0a0a; border-radius: 8px; text-align: center; display: none; }
   </style>
 </head>
 <body>
 
 <div id="loginView" class="view active">
-  <div class="login-box">
+  <div style="width:400px">
     <h1>AI DETECTOR</h1>
-    <input type="text" id="licenseInput" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="19">
+    <input type="text" id="licenseInput" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
     <button id="loginBtn">Access</button>
   </div>
 </div>
 
 <div id="appView" class="view">
   <div class="sidebar">
-    <div class="brand">DETECTOR</div>
-    <div class="menu">
-      <div class="menu-item active" id="navWorkspace">Workspace</div>
-      <div class="menu-item" id="navProfile">Profile</div>
-    </div>
-    <div class="logout-container">
-      <button class="logout-btn" id="logoutBtn">➜ Logout (종료)</button>
-    </div>
+    <div style="font-weight:700; margin-bottom:40px">DETECTOR</div>
+    <div id="navWorkspace" style="cursor:pointer; margin-bottom:10px">Workspace</div>
+    <div id="navProfile" style="cursor:pointer">Profile</div>
+    <button id="logoutBtn" style="margin-top:auto; background:none; color:#777">Logout</button>
   </div>
-
   <div class="main-content">
-    <div class="content-container">
-      
-      <!-- Workspace 탭 -->
-      <div id="tabWorkspace" class="tab-content active">
-        <h2 class="section-title">WORKSPACE</h2>
-        
-        <div class="char-stats">
-          <div class="stat-box"><span class="stat-label">공백 포함</span><span class="stat-value" id="charCount">0</span></div>
-          <div class="stat-box"><span class="stat-label">공백 제외</span><span class="stat-value" id="charNoSpaceCount">0</span></div>
-        </div>
-
-        <textarea id="textInput" placeholder="여기에 검사할 텍스트를 붙여넣으세요..."></textarea>
-        <button id="analyzeBtn">Analyze (Ensemble Mode)</button>
-
-        <div id="resultBox" class="result-box">
-          <div class="result-label">AI PROBABILITY (Ensemble)</div>
-          <div class="result-score" id="aiScore">-</div>
-        </div>
+    <div id="tabWorkspace" class="tab-content active" style="max-width:700px">
+      <textarea id="textInput" style="height:300px" placeholder="텍스트 입력"></textarea>
+      <button id="analyzeBtn">Analyze (Ensemble)</button>
+      <div id="resultBox" class="result-box"><div id="aiScore" style="font-size:48px">0%</div></div>
+    </div>
+    <div id="tabProfile" class="tab-content" style="max-width:700px">
+      <div class="profile-card">
+        <div class="info-row"><span>License</span><span id="profKey">-</span></div>
+        <div class="info-row"><span>Limit</span><span id="profLimit">-</span></div>
       </div>
-
-      <!-- Profile 탭 -->
-      <div id="tabProfile" class="tab-content">
-        <h2 class="section-title">PROFILE</h2>
-        <div class="profile-card">
-          <div class="info-row">
-            <span class="info-label">Account Role</span>
-            <span class="badge" id="profRoleBadge">USER</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">License Key</span>
-            <div class="license-wrap">
-              <span class="info-value" id="profKey">-</span>
-              <button class="icon-btn" id="toggleKeyBtn" style="display: none;"></button>
-            </div>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Daily Limit</span>
-            <span class="info-value" id="profLimit">-</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Used Characters</span>
-            <span class="info-value" id="profUsed">-</span>
-          </div>
-          <div class="info-row" style="margin-top: 8px; border-top: 1px solid #222; padding-top: 24px;">
-            <span class="info-label" style="color:#fff; font-weight:700;">Remaining</span>
-            <span class="info-value" id="profRemain" style="color:#fff; font-weight:700;">-</span>
-          </div>
-        </div>
-      </div>
-
     </div>
   </div>
 </div>
 
 <script>
   const API_BASE = "https://atio.onrender.com/api";
-  let currentProfile = { key: '', limit: 0, used: 0, role: 'user' };
-  let isKeyVisible = false;
+  
+  // 로그인/로그아웃 및 통신 로직
+  document.getElementById('loginBtn').onclick = async () => {
+    const key = document.getElementById('licenseInput').value;
+    const res = await fetch(`${API_BASE}/verify`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({licenseKey:key}) });
+    if (res.ok) { localStorage.setItem('ai_license_key', key); location.reload(); }
+    else alert("키 오류");
+  };
 
-  const eyeOnSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
-  const eyeOffSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
-
-  function switchView(view) {
-    document.getElementById('loginView').classList.remove('active');
-    document.getElementById('appView').classList.remove('active');
-    if (view === 'login') document.getElementById('loginView').classList.add('active');
-    else document.getElementById('appView').classList.add('active');
-  }
-
-  function switchTab(tab) {
-    const navs = [document.getElementById('navWorkspace'), document.getElementById('navProfile')];
-    const tabs = [document.getElementById('tabWorkspace'), document.getElementById('tabProfile')];
-    navs.forEach(n => n.classList.remove('active'));
-    tabs.forEach(t => t.classList.remove('active'));
-    
-    if (tab === 'workspace') { navs[0].classList.add('active'); tabs[0].classList.add('active'); }
-    else { navs[1].classList.add('active'); tabs[1].classList.add('active'); updateProfileUI(); }
-  }
-
-  document.getElementById('navWorkspace').addEventListener('click', () => switchTab('workspace'));
-  document.getElementById('navProfile').addEventListener('click', () => switchTab('profile'));
-
-  function updateKeyDisplay() {
-    const keyEl = document.getElementById('profKey');
-    const toggleBtn = document.getElementById('toggleKeyBtn');
-    if (!currentProfile.key) { toggleBtn.style.display = 'none'; return; }
-    toggleBtn.style.display = 'flex';
-    if (isKeyVisible) { keyEl.textContent = currentProfile.key; toggleBtn.innerHTML = eyeOffSvg; }
-    else { keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4); toggleBtn.innerHTML = eyeOnSvg; }
-  }
-
-  document.getElementById('toggleKeyBtn').addEventListener('click', () => { isKeyVisible = !isKeyVisible; updateKeyDisplay(); });
-
-  function updateProfileUI() {
-    updateKeyDisplay();
-    document.getElementById('profUsed').textContent = currentProfile.used.toLocaleString();
-    const badge = document.getElementById('profRoleBadge');
-    badge.textContent = currentProfile.role.toUpperCase();
-    badge.className = `badge ${currentProfile.role}`;
-    
-    const limitEl = document.getElementById('profLimit');
-    const remainEl = document.getElementById('profRemain');
-    if (currentProfile.role === 'admin') {
-      limitEl.textContent = "Unlimited"; limitEl.className = "info-value unlimited-text";
-      remainEl.textContent = "Unlimited"; remainEl.className = "info-value unlimited-text";
-    } else {
-      limitEl.textContent = currentProfile.limit.toLocaleString();
-      remainEl.textContent = Math.max(0, currentProfile.limit - currentProfile.used).toLocaleString();
-    }
-  }
-
-  document.getElementById('licenseInput').addEventListener('input', function() {
-    let val = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-    let formatted = '';
-    for (let i = 0; i < val.length; i++) { if (i > 0 && i % 4 === 0) formatted += '-'; formatted += val[i]; }
-    this.value = formatted;
-  });
-
-  async function verifyLicense(key, isSilent = false) {
-    try {
-      const res = await fetch(`${API_BASE}/verify`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ licenseKey: key }) });
-      const data = await res.json();
-      if (!res.ok) throw new Error();
-      currentProfile = { key, limit: data.limit, used: data.used, role: data.role };
-      updateProfileUI();
-      return true;
-    } catch { if (!isSilent) alert("Invalid Key"); return false; }
-  }
-
-  document.getElementById('loginBtn').addEventListener('click', async () => {
-    const key = document.getElementById('licenseInput').value.trim();
-    if (await verifyLicense(key)) { localStorage.setItem('ai_license_key', key); switchView('app'); switchTab('workspace'); }
-  });
-
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('ai_license_key');
-    switchView('login');
-  });
-
-  document.getElementById('textInput').addEventListener('input', (e) => {
-    document.getElementById('charCount').textContent = e.target.value.length.toLocaleString();
-    document.getElementById('charNoSpaceCount').textContent = e.target.value.replace(/\s+/g, '').length.toLocaleString();
-  });
-
-  document.getElementById('analyzeBtn').addEventListener('click', async () => {
-    const text = document.getElementById('textInput').value.trim();
-    if (!text) return;
-    const btn = document.getElementById('analyzeBtn');
-    btn.textContent = "Analyzing with Ensemble..."; btn.disabled = true;
-    const res = await fetch(`${API_BASE}/detect`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ text, licenseKey: localStorage.getItem('ai_license_key') }) });
+  document.getElementById('analyzeBtn').onclick = async () => {
+    const text = document.getElementById('textInput').value;
+    const res = await fetch(`${API_BASE}/detect`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text, licenseKey:localStorage.getItem('ai_license_key')}) });
     const data = await res.json();
     if (data.success) { document.getElementById('aiScore').textContent = data.aiScore + "%"; document.getElementById('resultBox').style.display = "block"; }
-    else alert(data.error);
-    btn.textContent = "Analyze (Ensemble Mode)"; btn.disabled = false;
-  });
+  };
 
-  window.addEventListener('DOMContentLoaded', async () => {
-    const savedKey = localStorage.getItem('ai_license_key');
-    if (savedKey && await verifyLicense(savedKey, true)) { switchView('app'); switchTab('workspace'); }
-  });
+  document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('ai_license_key'); location.reload(); };
+  
+  window.onload = () => { if (localStorage.getItem('ai_license_key')) { document.getElementById('loginView').classList.remove('active'); document.getElementById('appView').classList.add('active'); } };
 </script>
-
 </body>
 </html>
