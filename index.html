@@ -29,7 +29,7 @@
     #appView { height: 100vh; width: 100%; display: none; }
     #appView.active { display: flex; }
 
-    /* 사이드바 (로그아웃 하단 완벽 고정) */
+    /* 사이드바 */
     .sidebar { width: 240px; background: #0a0a0a; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 24px; height: 100vh; }
     .brand { font-size: 18px; font-weight: 700; margin-bottom: 40px; padding: 0 12px; }
     .menu { flex: 1; }
@@ -48,7 +48,7 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* 글자 수 카드 UI */
+    /* 글자 수 통계 UI */
     .char-stats { display: flex; gap: 16px; margin-bottom: 16px; }
     .stat-box { flex: 1; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; align-items: center; }
     .stat-label { font-size: 13px; color: #777; margin-bottom: 8px; }
@@ -59,12 +59,20 @@
     .result-label { font-size: 12px; color: #777; margin-bottom: 12px; letter-spacing: 1px; }
     .result-score { font-size: 48px; font-weight: 700; color: #fff; }
 
-    /* 프로필 정보 카드 */
+    /* 프로필 탭 정보 카드 */
     .profile-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 24px; }
     .info-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #141414; font-size: 14px; }
     .info-row:last-child { border-bottom: none; padding-bottom: 0; }
     .info-label { color: #777; }
     .info-value { color: #fff; font-family: monospace; font-size: 15px; }
+    
+    /* 🔑 라이선스 키 블라인드 처리용 CSS 추가 */
+    .license-wrap { display: flex; align-items: center; gap: 8px; }
+    .icon-btn { 
+      background: transparent; border: none; color: #555; width: auto; padding: 4px; 
+      cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s; 
+    }
+    .icon-btn:hover { color: #fff; background: transparent; }
     
     .badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; background: #222; }
     .badge.admin { background: #5c2018; color: #ff8a80; }
@@ -74,7 +82,6 @@
 </head>
 <body>
 
-<!-- 1. 로그인 화면 -->
 <div id="loginView" class="view active">
   <div class="login-box">
     <h1>AI DETECTOR</h1>
@@ -83,7 +90,6 @@
   </div>
 </div>
 
-<!-- 2. 대시보드 화면 -->
 <div id="appView" class="view">
   <div class="sidebar">
     <div class="brand">DETECTOR</div>
@@ -130,10 +136,18 @@
             <span class="info-label">Account Role</span>
             <span class="badge" id="profRoleBadge">USER</span>
           </div>
+          
+          <!-- 💡 눈 아이콘이 추가된 라이선스 키 영역 -->
           <div class="info-row">
             <span class="info-label">License Key</span>
-            <span class="info-value" id="profKey">-</span>
+            <div class="license-wrap">
+              <span class="info-value" id="profKey">-</span>
+              <button class="icon-btn" id="toggleKeyBtn" title="Show/Hide Key" style="display: none;">
+                <!-- 아이콘은 JS에서 주입됨 -->
+              </button>
+            </div>
           </div>
+
           <div class="info-row">
             <span class="info-label">Daily Limit</span>
             <span class="info-value" id="profLimit">-</span>
@@ -157,6 +171,11 @@
   const API_BASE = "https://atio.onrender.com/api";
   
   let currentProfile = { key: '', limit: 0, used: 0, role: 'user' };
+  let isKeyVisible = false; // 🔑 키 숨김 상태 관리용 변수
+
+  // 깔끔한 UI를 위한 SVG 눈 아이콘 디자인
+  const eyeOnSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+  const eyeOffSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
 
   const loginView = document.getElementById('loginView');
   const appView = document.getElementById('appView');
@@ -166,7 +185,6 @@
   const tabProfile = document.getElementById('tabProfile');
   const licenseInput = document.getElementById('licenseInput');
 
-  // 화면 전환
   function switchView(view) {
     loginView.classList.remove('active'); appView.classList.remove('active');
     if (view === 'login') loginView.classList.add('active');
@@ -176,16 +194,49 @@
   function switchTab(tab) {
     navWorkspace.classList.remove('active'); navProfile.classList.remove('active');
     tabWorkspace.classList.remove('active'); tabProfile.classList.remove('active');
-    if (tab === 'workspace') { navWorkspace.classList.add('active'); tabWorkspace.classList.add('active'); } 
-    else { navProfile.classList.add('active'); tabProfile.classList.add('active'); updateProfileUI(); }
+    if (tab === 'workspace') { 
+      navWorkspace.classList.add('active'); tabWorkspace.classList.add('active'); 
+    } else { 
+      navProfile.classList.add('active'); tabProfile.classList.add('active'); 
+      updateProfileUI(); 
+    }
   }
 
   navWorkspace.addEventListener('click', () => switchTab('workspace'));
   navProfile.addEventListener('click', () => switchTab('profile'));
 
-  // 프로필 UI 업데이트 (어드민 무제한 텍스트 표시 적용)
+  // 🔑 라이선스 키 숨김/보임 처리 함수
+  function updateKeyDisplay() {
+    const keyEl = document.getElementById('profKey');
+    const toggleBtn = document.getElementById('toggleKeyBtn');
+
+    if (!currentProfile.key) {
+      keyEl.textContent = '-';
+      toggleBtn.style.display = 'none';
+      return;
+    }
+
+    toggleBtn.style.display = 'flex';
+    
+    if (isKeyVisible) {
+      keyEl.textContent = currentProfile.key; // 전체 키 표시
+      toggleBtn.innerHTML = eyeOffSvg; // 사선 그어진 눈 아이콘
+    } else {
+      // 마지막 4자리만 표시하고 나머지는 별표(*) 처리
+      keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4);
+      toggleBtn.innerHTML = eyeOnSvg; // 일반 눈 아이콘
+    }
+  }
+
+  // 눈 아이콘 클릭 이벤트
+  document.getElementById('toggleKeyBtn').addEventListener('click', () => {
+    isKeyVisible = !isKeyVisible;
+    updateKeyDisplay();
+  });
+
+  // 프로필 정보 업데이트
   function updateProfileUI() {
-    document.getElementById('profKey').textContent = currentProfile.key;
+    updateKeyDisplay(); // 키 블라인드 처리 적용
     document.getElementById('profUsed').textContent = currentProfile.used.toLocaleString();
     
     const badge = document.getElementById('profRoleBadge');
@@ -208,7 +259,6 @@
     }
   }
 
-  // 키 자동 대문자 및 하이픈 처리
   licenseInput.addEventListener('input', function() {
     let val = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     let formatted = '';
@@ -223,7 +273,6 @@
     if (e.key === 'Enter') document.getElementById('loginBtn').click();
   });
 
-  // 서버 라이선스 검증
   async function verifyLicense(key, isSilent = false) {
     try {
       const res = await fetch(`${API_BASE}/verify`, {
@@ -243,7 +292,6 @@
     }
   }
 
-  // 새로고침 자동 로그인 유지
   window.addEventListener('DOMContentLoaded', async () => {
     const savedKey = localStorage.getItem('ai_license_key');
     if (savedKey) {
@@ -253,7 +301,6 @@
     }
   });
 
-  // 로그인 시도
   document.getElementById('loginBtn').addEventListener('click', async () => {
     const key = licenseInput.value.trim();
     if (key.length !== 19) return alert("16자리의 라이선스 키를 정확히 입력해주세요.");
@@ -264,15 +311,16 @@
     if (isValid) {
       localStorage.setItem('ai_license_key', key);
       licenseInput.value = '';
+      isKeyVisible = false; // 로그인 시 기본적으로 키 숨김 처리
       switchView('app'); switchTab('workspace');
     }
     document.getElementById('loginBtn').textContent = "Access";
   });
 
-  // 로그아웃 (스토리지 삭제, UI 데이터 전체 삭제 및 로그인 이동)
   document.getElementById('logoutBtn').addEventListener('click', () => {
     localStorage.removeItem('ai_license_key');
     currentProfile = { key: '', limit: 0, used: 0, role: 'user' };
+    isKeyVisible = false; // 로그아웃 시 눈 아이콘 상태 초기화
     
     document.getElementById('textInput').value = '';
     document.getElementById('charCount').textContent = '0';
@@ -283,14 +331,12 @@
     switchView('login');
   });
 
-  // 글자 수 집계
   document.getElementById('textInput').addEventListener('input', (e) => {
     const text = e.target.value;
     document.getElementById('charCount').textContent = text.length.toLocaleString();
     document.getElementById('charNoSpaceCount').textContent = text.replace(/\s+/g, '').length.toLocaleString();
   });
 
-  // 검사 요청
   document.getElementById('analyzeBtn').addEventListener('click', async () => {
     const text = document.getElementById('textInput').value.trim();
     const model = document.getElementById('modelSelect').value;
