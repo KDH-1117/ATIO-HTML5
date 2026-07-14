@@ -16,6 +16,8 @@
       transition: border 0.2s ease; margin-bottom: 16px;
     }
     input:focus, select:focus, textarea:focus { border-color: #444; }
+    input::placeholder, textarea::placeholder { color: #555; }
+    
     button {
       width: 100%; background: #fff; color: #000; padding: 16px;
       border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
@@ -32,6 +34,8 @@
     #loginView { flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
     .login-box { width: 100%; max-width: 400px; padding: 32px; }
     .login-box h1 { font-size: 24px; font-weight: 700; margin-bottom: 32px; letter-spacing: -0.5px; text-align: center; }
+    .login-input-wrapper { position: relative; }
+    .login-input-wrapper input { font-family: monospace; font-size: 16px; letter-spacing: 1px; text-align: center; }
 
     /* --- 메인 대시보드 레이아웃 --- */
     #appView { height: 100vh; width: 100%; display: none; }
@@ -47,7 +51,7 @@
     }
     .menu-item:hover { color: #fff; background: #111; }
     .menu-item.active { color: #fff; background: #1a1a1a; }
-    .logout-btn { color: #555; }
+    .logout-btn { color: #555; margin-top: auto; }
     .logout-btn:hover { color: #ff4d4d; background: transparent; }
 
     /* 오른쪽 메인 컨텐츠 영역 */
@@ -59,9 +63,16 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* 워크스페이스 세부 디자인 */
-    textarea { height: 240px; resize: none; line-height: 1.6; }
-    .status-bar { display: flex; justify-content: space-between; font-size: 12px; color: #555; margin-top: -8px; margin-bottom: 24px; padding: 0 4px; }
+    /* 워크스페이스 글자 수 통계 UI (새로 추가됨) */
+    .char-stats { display: flex; gap: 16px; margin-bottom: 16px; }
+    .stat-box { 
+      flex: 1; background: #0a0a0a; border: 1px solid #1a1a1a; 
+      border-radius: 8px; padding: 20px; display: flex; flex-direction: column; align-items: center; 
+    }
+    .stat-label { font-size: 13px; color: #777; margin-bottom: 8px; font-weight: 500; }
+    .stat-value { font-size: 28px; font-weight: 700; color: #fff; font-family: monospace; }
+
+    textarea { height: 280px; resize: none; line-height: 1.6; }
     
     .result-box {
       margin-top: 24px; padding: 32px; background: #0a0a0a;
@@ -85,7 +96,9 @@
 <div id="loginView" class="view active">
   <div class="login-box">
     <h1>AI DETECTOR</h1>
-    <input type="text" id="licenseInput" placeholder="Enter License Key" autocomplete="off" spellcheck="false">
+    <div class="login-input-wrapper">
+      <input type="text" id="licenseInput" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="19">
+    </div>
     <button id="loginBtn">Access</button>
   </div>
 </div>
@@ -100,9 +113,7 @@
       <div class="menu-item active" id="navWorkspace">Workspace</div>
       <div class="menu-item" id="navProfile">Profile</div>
     </div>
-    <div>
-      <div class="menu-item logout-btn" id="logoutBtn">Logout</div>
-    </div>
+    <div class="menu-item logout-btn" id="logoutBtn">Logout</div>
   </div>
 
   <!-- 메인 컨텐츠 -->
@@ -112,14 +123,26 @@
       <!-- [탭 1] Workspace -->
       <div id="tabWorkspace" class="tab-content active">
         <h2 class="section-title">WORKSPACE</h2>
+        
         <select id="modelSelect">
-          <option value="sapling">Model: Sapling AI</option>
-          <option value="huggingface">Model: Hugging Face</option>
+          <option value="sapling">Model: Sapling AI (한국어 지원)</option>
+          <option value="huggingface">Model: Hugging Face (영어 전용)</option>
         </select>
-        <textarea id="textInput" placeholder="Paste text here to analyze..."></textarea>
-        <div class="status-bar">
-          <span id="charCount">0 chars</span>
+
+        <!-- 크고 직관적인 글자 수 UI -->
+        <div class="char-stats">
+          <div class="stat-box">
+            <span class="stat-label">공백 포함 (Total)</span>
+            <span class="stat-value" id="charCount">0</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">공백 제외 (No Spaces)</span>
+            <span class="stat-value" id="charNoSpaceCount">0</span>
+          </div>
         </div>
+
+        <textarea id="textInput" placeholder="여기에 검사할 텍스트를 붙여넣으세요..."></textarea>
+        
         <button id="analyzeBtn">Analyze</button>
 
         <div id="resultBox" class="result-box">
@@ -156,20 +179,20 @@
 </div>
 
 <script>
+  // 회원님의 Render 서버 주소
   const API_BASE = "https://atio.onrender.com/api";
 
-  // 상태 관리
   let currentProfile = { key: '', limit: 0, used: 0 };
 
-  // DOM 요소
   const loginView = document.getElementById('loginView');
   const appView = document.getElementById('appView');
   const navWorkspace = document.getElementById('navWorkspace');
   const navProfile = document.getElementById('navProfile');
   const tabWorkspace = document.getElementById('tabWorkspace');
   const tabProfile = document.getElementById('tabProfile');
+  const licenseInput = document.getElementById('licenseInput');
 
-  // 화면/탭 전환 로직
+  // --- 화면 및 탭 전환 ---
   function switchView(view) {
     loginView.classList.remove('active');
     appView.classList.remove('active');
@@ -189,14 +212,13 @@
     } else {
       navProfile.classList.add('active');
       tabProfile.classList.add('active');
-      updateProfileUI(); // 프로필 탭 열 때 UI 업데이트
+      updateProfileUI(); 
     }
   }
 
   navWorkspace.addEventListener('click', () => switchTab('workspace'));
   navProfile.addEventListener('click', () => switchTab('profile'));
 
-  // 프로필 UI 업데이트 함수
   function updateProfileUI() {
     document.getElementById('profKey').textContent = currentProfile.key;
     document.getElementById('profLimit').textContent = currentProfile.limit.toLocaleString();
@@ -204,15 +226,24 @@
     document.getElementById('profRemain').textContent = Math.max(0, currentProfile.limit - currentProfile.used).toLocaleString();
   }
 
-  // 로그인 (서버 검증 기능 추가됨)
-  document.getElementById('loginBtn').addEventListener('click', async () => {
-    const key = document.getElementById('licenseInput').value.trim();
-    if (!key) return;
+  // --- 라이선스 자동 포맷 (XXXX-XXXX-XXXX-XXXX) ---
+  licenseInput.addEventListener('input', function(e) {
+    // 1. 영어/숫자 외의 모든 문자 제거 및 대문자 변환
+    let val = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    
+    // 2. 4자리마다 하이픈(-) 추가
+    let formatted = '';
+    for (let i = 0; i < val.length; i++) {
+      if (i > 0 && i % 4 === 0) formatted += '-';
+      formatted += val[i];
+    }
+    
+    // 3. 입력창에 반영 (최대 19글자 제한은 HTML maxlength="19"가 잡아줌)
+    this.value = formatted;
+  });
 
-    const btn = document.getElementById('loginBtn');
-    btn.textContent = "Verifying...";
-    btn.disabled = true;
-
+  // --- 서버 검증 및 프로필 동기화 ---
+  async function verifyLicense(key, isSilent = false) {
     try {
       const res = await fetch(`${API_BASE}/verify`, {
         method: 'POST',
@@ -221,44 +252,85 @@
       });
       const data = await res.json();
 
-      if (!res.ok) {
-        alert("유효하지 않은 라이선스 키입니다.");
-      } else {
-        // 검증 성공 시
-        currentProfile = { key: key, limit: data.limit, used: data.used };
-        localStorage.setItem('ai_license_key', key);
-        document.getElementById('licenseInput').value = '';
-        switchView('app');
-        switchTab('workspace');
-      }
+      if (!res.ok) throw new Error("Invalid Key");
+      
+      currentProfile = { key: key, limit: data.limit, used: data.used };
+      return true;
     } catch (e) {
-      alert("서버 연결 실패. 서버가 준비 중일 수 있습니다.");
-    } finally {
-      btn.textContent = "Access";
-      btn.disabled = false;
+      if (!isSilent) alert("유효하지 않은 라이선스 키입니다.");
+      return false;
+    }
+  }
+
+  // --- 새로고침 시 자동 로그인(세션 유지) ---
+  window.addEventListener('DOMContentLoaded', async () => {
+    const savedKey = localStorage.getItem('ai_license_key');
+    if (savedKey) {
+      // 로컬 스토리지에 키가 있으면 일단 화면을 띄워주고 백그라운드 검증
+      switchView('app');
+      switchTab('workspace');
+      const isValid = await verifyLicense(savedKey, true);
+      
+      // 만약 그사이 서버에서 키가 삭제되었다면 강제 로그아웃
+      if (!isValid) document.getElementById('logoutBtn').click();
     }
   });
 
-  // 로그아웃
+  // --- 로그인 버튼 ---
+  document.getElementById('loginBtn').addEventListener('click', async () => {
+    const key = licenseInput.value.trim();
+    if (key.length !== 19) return alert("16자리의 라이선스 키를 끝까지 입력해주세요.");
+
+    const btn = document.getElementById('loginBtn');
+    btn.textContent = "Verifying...";
+    btn.disabled = true;
+
+    const isValid = await verifyLicense(key);
+    
+    if (isValid) {
+      localStorage.setItem('ai_license_key', key);
+      licenseInput.value = '';
+      switchView('app');
+      switchTab('workspace');
+    }
+
+    btn.textContent = "Access";
+    btn.disabled = false;
+  });
+
+  // 엔터키로도 로그인 가능하게
+  licenseInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') document.getElementById('loginBtn').click();
+  });
+
+  // --- 로그아웃 ---
   document.getElementById('logoutBtn').addEventListener('click', () => {
     localStorage.removeItem('ai_license_key');
+    currentProfile = { key: '', limit: 0, used: 0 };
     document.getElementById('textInput').value = '';
+    document.getElementById('charCount').textContent = '0';
+    document.getElementById('charNoSpaceCount').textContent = '0';
     document.getElementById('resultBox').style.display = 'none';
     switchView('login');
   });
 
-  // 글자 수 세기
+  // --- 글자 수 세기 UI 업데이트 ---
   document.getElementById('textInput').addEventListener('input', (e) => {
-    document.getElementById('charCount').textContent = `${e.target.value.length} chars`;
+    const text = e.target.value;
+    const noSpaceText = text.replace(/\s+/g, ''); // 띄어쓰기, 줄바꿈 모두 제거
+    
+    // 숫자에 콤마(,) 찍어서 크게 표시
+    document.getElementById('charCount').textContent = text.length.toLocaleString();
+    document.getElementById('charNoSpaceCount').textContent = noSpaceText.length.toLocaleString();
   });
 
-  // 분석
+  // --- 분석 기능 ---
   document.getElementById('analyzeBtn').addEventListener('click', async () => {
     const text = document.getElementById('textInput').value.trim();
     const model = document.getElementById('modelSelect').value;
     const key = localStorage.getItem('ai_license_key');
 
-    if (!text) return;
+    if (!text) return alert("검사할 텍스트를 입력해주세요.");
 
     const btn = document.getElementById('analyzeBtn');
     btn.textContent = "Analyzing...";
@@ -274,17 +346,19 @@
       const data = await res.json();
 
       if (!res.ok) {
-        if (res.status === 401) document.getElementById('logoutBtn').click(); // 키 잘림
-        else alert(data.error);
+        if (res.status === 401) {
+          alert("라이선스가 만료되었거나 유효하지 않습니다.");
+          document.getElementById('logoutBtn').click();
+        } else {
+          alert(data.error || "분석 중 오류가 발생했습니다.");
+        }
       } else {
         document.getElementById('aiScore').textContent = data.aiScore + "%";
         document.getElementById('resultBox').style.display = "block";
-        
-        // 분석 성공 시 백그라운드에서 프로필(사용량) 데이터 갱신
-        currentProfile.used = data.usedChars; 
+        currentProfile.used = data.usedChars; // 사용량 실시간 동기화
       }
     } catch (e) {
-      alert("분석 중 오류가 발생했습니다.");
+      alert("서버 통신에 실패했습니다.");
     } finally {
       btn.textContent = "Analyze";
       btn.disabled = false;
