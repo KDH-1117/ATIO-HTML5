@@ -48,7 +48,7 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* 글자 수 통계 UI */
+    /* 통계 */
     .char-stats { display: flex; gap: 16px; margin-bottom: 16px; }
     .stat-box { flex: 1; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; align-items: center; }
     .stat-label { font-size: 13px; color: #777; margin-bottom: 8px; }
@@ -59,20 +59,17 @@
     .result-label { font-size: 12px; color: #777; margin-bottom: 12px; letter-spacing: 1px; }
     .result-score { font-size: 48px; font-weight: 700; color: #fff; }
 
-    /* 프로필 탭 정보 카드 */
+    /* 프로필 */
     .profile-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 24px; }
     .info-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #141414; font-size: 14px; }
     .info-row:last-child { border-bottom: none; padding-bottom: 0; }
     .info-label { color: #777; }
     .info-value { color: #fff; font-family: monospace; font-size: 15px; }
     
-    /* 🔑 라이선스 키 블라인드 처리용 CSS 추가 */
+    /* 🔑 라이선스 키 마스킹 관련 스타일 */
     .license-wrap { display: flex; align-items: center; gap: 8px; }
-    .icon-btn { 
-      background: transparent; border: none; color: #555; width: auto; padding: 4px; 
-      cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s; 
-    }
-    .icon-btn:hover { color: #fff; background: transparent; }
+    .icon-btn { background: transparent; border: none; color: #555; width: auto; padding: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
+    .icon-btn:hover { color: #fff; }
     
     .badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; background: #222; }
     .badge.admin { background: #5c2018; color: #ff8a80; }
@@ -109,21 +106,16 @@
       <div id="tabWorkspace" class="tab-content active">
         <h2 class="section-title">WORKSPACE</h2>
         
-        <select id="modelSelect">
-          <option value="gemini">Model: Google Gemini (추천/기본)</option>
-          <option value="groq">Model: Groq Llama 3 (초고속 검증용)</option>
-        </select>
-
         <div class="char-stats">
           <div class="stat-box"><span class="stat-label">공백 포함</span><span class="stat-value" id="charCount">0</span></div>
           <div class="stat-box"><span class="stat-label">공백 제외</span><span class="stat-value" id="charNoSpaceCount">0</span></div>
         </div>
 
         <textarea id="textInput" placeholder="여기에 검사할 텍스트를 붙여넣으세요..."></textarea>
-        <button id="analyzeBtn">Analyze</button>
+        <button id="analyzeBtn">Analyze (Ensemble Mode)</button>
 
         <div id="resultBox" class="result-box">
-          <div class="result-label">AI PROBABILITY</div>
+          <div class="result-label">AI PROBABILITY (Ensemble)</div>
           <div class="result-score" id="aiScore">-</div>
         </div>
       </div>
@@ -136,18 +128,13 @@
             <span class="info-label">Account Role</span>
             <span class="badge" id="profRoleBadge">USER</span>
           </div>
-          
-          <!-- 💡 눈 아이콘이 추가된 라이선스 키 영역 -->
           <div class="info-row">
             <span class="info-label">License Key</span>
             <div class="license-wrap">
               <span class="info-value" id="profKey">-</span>
-              <button class="icon-btn" id="toggleKeyBtn" title="Show/Hide Key" style="display: none;">
-                <!-- 아이콘은 JS에서 주입됨 -->
-              </button>
+              <button class="icon-btn" id="toggleKeyBtn" style="display: none;"></button>
             </div>
           </div>
-
           <div class="info-row">
             <span class="info-label">Daily Limit</span>
             <span class="info-value" id="profLimit">-</span>
@@ -169,206 +156,109 @@
 
 <script>
   const API_BASE = "https://atio.onrender.com/api";
-  
   let currentProfile = { key: '', limit: 0, used: 0, role: 'user' };
-  let isKeyVisible = false; // 🔑 키 숨김 상태 관리용 변수
+  let isKeyVisible = false;
 
-  // 깔끔한 UI를 위한 SVG 눈 아이콘 디자인
   const eyeOnSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
   const eyeOffSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
 
-  const loginView = document.getElementById('loginView');
-  const appView = document.getElementById('appView');
-  const navWorkspace = document.getElementById('navWorkspace');
-  const navProfile = document.getElementById('navProfile');
-  const tabWorkspace = document.getElementById('tabWorkspace');
-  const tabProfile = document.getElementById('tabProfile');
-  const licenseInput = document.getElementById('licenseInput');
-
   function switchView(view) {
-    loginView.classList.remove('active'); appView.classList.remove('active');
-    if (view === 'login') loginView.classList.add('active');
-    if (view === 'app') appView.classList.add('active');
+    document.getElementById('loginView').classList.remove('active');
+    document.getElementById('appView').classList.remove('active');
+    if (view === 'login') document.getElementById('loginView').classList.add('active');
+    else document.getElementById('appView').classList.add('active');
   }
 
   function switchTab(tab) {
-    navWorkspace.classList.remove('active'); navProfile.classList.remove('active');
-    tabWorkspace.classList.remove('active'); tabProfile.classList.remove('active');
-    if (tab === 'workspace') { 
-      navWorkspace.classList.add('active'); tabWorkspace.classList.add('active'); 
-    } else { 
-      navProfile.classList.add('active'); tabProfile.classList.add('active'); 
-      updateProfileUI(); 
-    }
+    const navs = [document.getElementById('navWorkspace'), document.getElementById('navProfile')];
+    const tabs = [document.getElementById('tabWorkspace'), document.getElementById('tabProfile')];
+    navs.forEach(n => n.classList.remove('active'));
+    tabs.forEach(t => t.classList.remove('active'));
+    
+    if (tab === 'workspace') { navs[0].classList.add('active'); tabs[0].classList.add('active'); }
+    else { navs[1].classList.add('active'); tabs[1].classList.add('active'); updateProfileUI(); }
   }
 
-  navWorkspace.addEventListener('click', () => switchTab('workspace'));
-  navProfile.addEventListener('click', () => switchTab('profile'));
+  document.getElementById('navWorkspace').addEventListener('click', () => switchTab('workspace'));
+  document.getElementById('navProfile').addEventListener('click', () => switchTab('profile'));
 
-  // 🔑 라이선스 키 숨김/보임 처리 함수
   function updateKeyDisplay() {
     const keyEl = document.getElementById('profKey');
     const toggleBtn = document.getElementById('toggleKeyBtn');
-
-    if (!currentProfile.key) {
-      keyEl.textContent = '-';
-      toggleBtn.style.display = 'none';
-      return;
-    }
-
+    if (!currentProfile.key) { toggleBtn.style.display = 'none'; return; }
     toggleBtn.style.display = 'flex';
-    
-    if (isKeyVisible) {
-      keyEl.textContent = currentProfile.key; // 전체 키 표시
-      toggleBtn.innerHTML = eyeOffSvg; // 사선 그어진 눈 아이콘
-    } else {
-      // 마지막 4자리만 표시하고 나머지는 별표(*) 처리
-      keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4);
-      toggleBtn.innerHTML = eyeOnSvg; // 일반 눈 아이콘
-    }
+    if (isKeyVisible) { keyEl.textContent = currentProfile.key; toggleBtn.innerHTML = eyeOffSvg; }
+    else { keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4); toggleBtn.innerHTML = eyeOnSvg; }
   }
 
-  // 눈 아이콘 클릭 이벤트
-  document.getElementById('toggleKeyBtn').addEventListener('click', () => {
-    isKeyVisible = !isKeyVisible;
-    updateKeyDisplay();
-  });
+  document.getElementById('toggleKeyBtn').addEventListener('click', () => { isKeyVisible = !isKeyVisible; updateKeyDisplay(); });
 
-  // 프로필 정보 업데이트
   function updateProfileUI() {
-    updateKeyDisplay(); // 키 블라인드 처리 적용
+    updateKeyDisplay();
     document.getElementById('profUsed').textContent = currentProfile.used.toLocaleString();
-    
     const badge = document.getElementById('profRoleBadge');
     badge.textContent = currentProfile.role.toUpperCase();
     badge.className = `badge ${currentProfile.role}`;
-
+    
     const limitEl = document.getElementById('profLimit');
     const remainEl = document.getElementById('profRemain');
-
     if (currentProfile.role === 'admin') {
-      limitEl.textContent = "Unlimited";
-      limitEl.className = "info-value unlimited-text";
-      remainEl.textContent = "Unlimited";
-      remainEl.className = "info-value unlimited-text";
+      limitEl.textContent = "Unlimited"; limitEl.className = "info-value unlimited-text";
+      remainEl.textContent = "Unlimited"; remainEl.className = "info-value unlimited-text";
     } else {
       limitEl.textContent = currentProfile.limit.toLocaleString();
-      limitEl.className = "info-value";
       remainEl.textContent = Math.max(0, currentProfile.limit - currentProfile.used).toLocaleString();
-      remainEl.className = "info-value";
     }
   }
 
-  licenseInput.addEventListener('input', function() {
+  document.getElementById('licenseInput').addEventListener('input', function() {
     let val = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     let formatted = '';
-    for (let i = 0; i < val.length; i++) {
-      if (i > 0 && i % 4 === 0) formatted += '-';
-      formatted += val[i];
-    }
+    for (let i = 0; i < val.length; i++) { if (i > 0 && i % 4 === 0) formatted += '-'; formatted += val[i]; }
     this.value = formatted;
-  });
-
-  licenseInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') document.getElementById('loginBtn').click();
   });
 
   async function verifyLicense(key, isSilent = false) {
     try {
-      const res = await fetch(`${API_BASE}/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ licenseKey: key })
-      });
+      const res = await fetch(`${API_BASE}/verify`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ licenseKey: key }) });
       const data = await res.json();
-      if (!res.ok) throw new Error("Invalid Key");
-      
-      currentProfile = { key: key, limit: data.limit, used: data.used, role: data.role };
+      if (!res.ok) throw new Error();
+      currentProfile = { key, limit: data.limit, used: data.used, role: data.role };
       updateProfileUI();
       return true;
-    } catch (e) {
-      if (!isSilent) alert("유효하지 않은 라이선스 키입니다.");
-      return false;
-    }
+    } catch { if (!isSilent) alert("Invalid Key"); return false; }
   }
 
-  window.addEventListener('DOMContentLoaded', async () => {
-    const savedKey = localStorage.getItem('ai_license_key');
-    if (savedKey) {
-      switchView('app'); switchTab('workspace');
-      const isValid = await verifyLicense(savedKey, true);
-      if (!isValid) document.getElementById('logoutBtn').click();
-    }
-  });
-
   document.getElementById('loginBtn').addEventListener('click', async () => {
-    const key = licenseInput.value.trim();
-    if (key.length !== 19) return alert("16자리의 라이선스 키를 정확히 입력해주세요.");
-    
-    document.getElementById('loginBtn').textContent = "Verifying...";
-    const isValid = await verifyLicense(key);
-    
-    if (isValid) {
-      localStorage.setItem('ai_license_key', key);
-      licenseInput.value = '';
-      isKeyVisible = false; // 로그인 시 기본적으로 키 숨김 처리
-      switchView('app'); switchTab('workspace');
-    }
-    document.getElementById('loginBtn').textContent = "Access";
+    const key = document.getElementById('licenseInput').value.trim();
+    if (await verifyLicense(key)) { localStorage.setItem('ai_license_key', key); switchView('app'); switchTab('workspace'); }
   });
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
     localStorage.removeItem('ai_license_key');
-    currentProfile = { key: '', limit: 0, used: 0, role: 'user' };
-    isKeyVisible = false; // 로그아웃 시 눈 아이콘 상태 초기화
-    
-    document.getElementById('textInput').value = '';
-    document.getElementById('charCount').textContent = '0';
-    document.getElementById('charNoSpaceCount').textContent = '0';
-    document.getElementById('resultBox').style.display = 'none';
-    document.getElementById('aiScore').textContent = '-';
-    
     switchView('login');
   });
 
   document.getElementById('textInput').addEventListener('input', (e) => {
-    const text = e.target.value;
-    document.getElementById('charCount').textContent = text.length.toLocaleString();
-    document.getElementById('charNoSpaceCount').textContent = text.replace(/\s+/g, '').length.toLocaleString();
+    document.getElementById('charCount').textContent = e.target.value.length.toLocaleString();
+    document.getElementById('charNoSpaceCount').textContent = e.target.value.replace(/\s+/g, '').length.toLocaleString();
   });
 
   document.getElementById('analyzeBtn').addEventListener('click', async () => {
     const text = document.getElementById('textInput').value.trim();
-    const model = document.getElementById('modelSelect').value;
-    const key = localStorage.getItem('ai_license_key');
-
-    if (!text) return alert("검사할 텍스트를 입력해주세요.");
-
+    if (!text) return;
     const btn = document.getElementById('analyzeBtn');
-    btn.textContent = "Analyzing..."; btn.disabled = true;
-    document.getElementById('resultBox').style.display = "none";
+    btn.textContent = "Analyzing with Ensemble..."; btn.disabled = true;
+    const res = await fetch(`${API_BASE}/detect`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ text, licenseKey: localStorage.getItem('ai_license_key') }) });
+    const data = await res.json();
+    if (data.success) { document.getElementById('aiScore').textContent = data.aiScore + "%"; document.getElementById('resultBox').style.display = "block"; }
+    else alert(data.error);
+    btn.textContent = "Analyze (Ensemble Mode)"; btn.disabled = false;
+  });
 
-    try {
-      const res = await fetch(`${API_BASE}/detect`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, licenseKey: key, model })
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (res.status === 401) document.getElementById('logoutBtn').click();
-        else alert(data.error);
-      } else {
-        document.getElementById('aiScore').textContent = data.aiScore + "%";
-        document.getElementById('resultBox').style.display = "block";
-        currentProfile.used = data.usedChars; 
-      }
-    } catch (e) {
-      alert("서버 통신에 실패했습니다.");
-    } finally {
-      btn.textContent = "Analyze"; btn.disabled = false;
-    }
+  window.addEventListener('DOMContentLoaded', async () => {
+    const savedKey = localStorage.getItem('ai_license_key');
+    if (savedKey && await verifyLicense(savedKey, true)) { switchView('app'); switchTab('workspace'); }
   });
 </script>
 
