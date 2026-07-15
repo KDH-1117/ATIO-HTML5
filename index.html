@@ -6,43 +6,69 @@
   <title>AI DETECTOR</title>
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
-    body { background-color: #050505; color: #ededed; height: 100vh; overflow: hidden; }
+    body { background-color: #050505; color: #ededed; height: 100vh; overflow: hidden; display: flex; }
     
-    .view { display: none !important; }
-    .view.active { display: flex !important; }
+    /* 💡 화면 전환 기본값 숨김 처리 */
+    .view { display: none; width: 100%; height: 100%; }
+    .view.active { display: flex; }
     
-    #loginView { flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100%; }
-    .login-box { width: 100%; max-width: 400px; padding: 32px; text-align: center; }
-    .login-box h1 { font-size: 24px; font-weight: 700; margin-bottom: 32px; }
+    /* 로그인 화면 중앙 정렬 */
+    #loginView { flex-direction: column; align-items: center; justify-content: center; background: #000; }
+    .login-box { width: 100%; max-width: 380px; padding: 40px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+    .login-box h1 { font-size: 24px; font-weight: 700; margin-bottom: 32px; letter-spacing: 1px; }
     
-    input, textarea { width: 100%; background: #111; border: 1px solid #222; color: #fff; padding: 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; outline: none; }
-    button { width: 100%; background: #fff; color: #000; padding: 16px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    /* 공통 입력/버튼 UI */
+    input, textarea { width: 100%; background: #050505; border: 1px solid #222; color: #fff; padding: 18px; border-radius: 12px; font-size: 15px; margin-bottom: 16px; outline: none; transition: border-color 0.2s; }
+    input:focus, textarea:focus { border-color: #444; }
+    button { width: 100%; background: #fff; color: #000; padding: 18px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
     button:hover { opacity: 0.8; }
     button:disabled { background: #333; color: #666; cursor: not-allowed; }
 
-    #appView { height: 100vh; width: 100%; flex-direction: row; }
-    .sidebar { width: 240px; background: #0a0a0a; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 24px; }
-    .main-content { flex: 1; padding: 48px; overflow-y: auto; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    /* 대시보드 구조 (사이드바 + 메인 완벽 분리) */
+    #appView { flex-direction: row; background: #000; }
     
-    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 24px; }
-    .result-box { margin-top: 24px; padding: 32px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; text-align: center; display: none; }
+    .sidebar { width: 260px; background: #050505; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 32px 24px; height: 100%; }
+    .sidebar-brand { font-size: 18px; font-weight: 700; margin-bottom: 48px; padding-left: 12px; letter-spacing: 1px; }
+    .nav-btn { padding: 14px 16px; cursor: pointer; border-radius: 10px; margin-bottom: 8px; font-weight: 500; transition: all 0.2s; color: #777; background: transparent; }
+    .nav-btn.active { background: #1a1a1a; color: #fff; font-weight: 600; }
+    .nav-btn:hover:not(.active) { color: #ccc; }
     
-    /* 💡 프로필 UI 정렬 CSS 완벽 수정 */
-    .profile-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 24px; }
-    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #141414; }
-    .info-label { color: #777; flex-shrink: 0; }
-    .license-wrap { display: flex; align-items: center; justify-content: flex-end; gap: 8px; white-space: nowrap; }
+    #logoutBtn { margin-top: auto; color: #ff4d4d; border: 1px solid #2a1111; background: transparent; text-align: left; padding-left: 16px; }
+    #logoutBtn:hover { background: #1a0a0a; }
+
+    /* 💡 메인 영역 레이아웃 (완벽한 중앙 정렬) */
+    .main-content { flex: 1; display: flex; justify-content: center; padding: 48px 24px; overflow-y: auto; }
+    .content-container { width: 100%; max-width: 720px; /* 👈 어떤 해상도에서도 이 너비를 유지하며 중앙에 뜸 */ }
+    
+    .tab-content { display: none; width: 100%; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+    
+    .section-title { font-size: 20px; font-weight: 700; margin-bottom: 32px; letter-spacing: 0.5px; }
+    
+    /* 요소별 스타일 */
+    .result-box { margin-top: 32px; padding: 40px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; text-align: center; display: none; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+    .profile-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; padding: 32px; }
+    
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid #141414; }
+    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .info-label { color: #777; font-size: 14px; flex-shrink: 0; }
     .info-value { font-family: monospace; font-size: 15px; color: #fff; letter-spacing: 0.5px; }
-    .icon-btn { background: transparent; border: none; color: #555; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 4px; transition: 0.2s; width: auto; }
-    .icon-btn:hover { color: #fff; background: #222; }
+    
+    .license-wrap { display: flex; align-items: center; justify-content: flex-end; gap: 8px; white-space: nowrap; }
+    .icon-btn { background: #111; border: 1px solid #222; color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 6px; width: auto; }
+    .icon-btn:hover { color: #fff; border-color: #444; }
+    
+    .text-green { color: #4ade80 !important; font-weight: 700; }
+    .text-red { color: #ff4d4d !important; font-weight: 700; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-<div id="loginView" class="view active">
+<div id="loginView" class="view">
   <div class="login-box">
     <h1>AI DETECTOR</h1>
     <input type="text" id="licenseInput" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19" style="text-align:center; font-family:monospace; letter-spacing:1px;" autocomplete="off" spellcheck="false">
@@ -52,66 +78,95 @@
 
 <div id="appView" class="view">
   <div class="sidebar">
-    <div style="font-weight:700; margin-bottom:40px; padding-left:12px; font-size:18px;">DETECTOR</div>
-    <div id="navWorkspace" style="padding:12px; cursor:pointer; background:#1a1a1a; border-radius:8px; margin-bottom:8px; font-weight:500;">Workspace</div>
-    <div id="navProfile" style="padding:12px; cursor:pointer; color:#777; font-weight:500; transition:0.2s;">Profile</div>
-    <button id="logoutBtn" style="margin-top:auto; background:none; color:#ff4d4d; border:1px solid #331111; padding:12px; text-align:left; padding-left:16px;">➜ Logout</button>
+    <div class="sidebar-brand">DETECTOR</div>
+    <div id="navWorkspace" class="nav-btn active">Workspace</div>
+    <div id="navProfile" class="nav-btn">Profile</div>
+    <button id="logoutBtn">➜ Logout</button>
   </div>
   
   <div class="main-content">
-    <div id="tabWorkspace" class="tab-content active" style="max-width:700px; margin:0 auto">
-      <h2 class="section-title">WORKSPACE</h2>
-      <textarea id="textInput" style="height:280px; resize:none; line-height:1.6;" placeholder="텍스트를 붙여넣으세요..."></textarea>
-      <button id="analyzeBtn">Analyze (Ensemble Mode)</button>
-      <div id="resultBox" class="result-box">
-        <div style="font-size:12px; color:#777; margin-bottom:12px; letter-spacing:1px;">AI PROBABILITY</div>
-        <div id="aiScore" style="font-size:48px; font-weight:700; color:#fff;">0%</div>
+    <div class="content-container">
+      
+      <!-- Workspace 탭 -->
+      <div id="tabWorkspace" class="tab-content active">
+        <h2 class="section-title">WORKSPACE</h2>
+        <textarea id="textInput" style="height:320px; resize:none; line-height:1.7;" placeholder="검사할 텍스트를 붙여넣으세요..."></textarea>
+        <button id="analyzeBtn">Analyze (Ensemble Mode)</button>
+        
+        <div id="resultBox" class="result-box">
+          <div style="font-size:13px; color:#777; margin-bottom:16px; letter-spacing:1.5px; font-weight:600;">AI PROBABILITY</div>
+          <div id="aiScore" style="font-size:56px; font-weight:800; color:#fff;">0%</div>
+        </div>
       </div>
-    </div>
 
-    <div id="tabProfile" class="tab-content" style="max-width:700px; margin:0 auto">
-      <h2 class="section-title">PROFILE</h2>
-      <div class="profile-card">
-        <!-- 💡 4줄로 깨지던 UI를 1줄로 완벽하게 묶음 -->
-        <div class="info-row">
-          <span class="info-label">License Key</span>
-          <div class="license-wrap">
-            <span id="profKey" class="info-value">-</span>
-            <button id="toggleKeyBtn" class="icon-btn" title="Toggle Visibility"></button>
+      <!-- Profile 탭 -->
+      <div id="tabProfile" class="tab-content">
+        <h2 class="section-title">PROFILE</h2>
+        <div class="profile-card">
+          <div class="info-row">
+            <span class="info-label">License Key</span>
+            <div class="license-wrap">
+              <span id="profKey" class="info-value">-</span>
+              <button id="toggleKeyBtn" class="icon-btn" title="Show/Hide"></button>
+            </div>
+          </div>
+          <div class="info-row"><span class="info-label">Daily Limit</span><span id="profLimit" class="info-value">-</span></div>
+          <div class="info-row"><span class="info-label">Used Characters</span><span id="profUsed" class="info-value">-</span></div>
+          
+          <!-- 💡 남은 양 표시 (구분선과 함께 강조) -->
+          <div class="info-row" style="margin-top: 16px; border-top: 1px solid #222; padding-top: 24px;">
+            <span class="info-label" style="color:#fff; font-weight:700; font-size:15px;">Remaining</span>
+            <span id="profRemain" class="info-value text-green">-</span>
           </div>
         </div>
-        <div class="info-row"><span class="info-label">Daily Limit</span><span id="profLimit" class="info-value">-</span></div>
-        <div class="info-row"><span class="info-label">Used Characters</span><span id="profUsed" class="info-value">-</span></div>
       </div>
+
     </div>
   </div>
 </div>
 
 <script>
+  // 💡 [핵심 UX 개선] 깜빡임 없는 로그인 상태 유지 (새로고침 시 로그인 창 안 뜸)
+  if (localStorage.getItem('ai_license_key')) {
+    document.getElementById('appView').classList.add('active');
+  } else {
+    document.getElementById('loginView').classList.add('active');
+  }
+
   const API_BASE = "https://atio.onrender.com/api";
-  let currentProfile = { key: '', limit: 0, used: 0 };
+  let currentProfile = { key: '', limit: 0, used: 0, role: 'user' };
   let isKeyVisible = false;
 
   const eyeOnSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
   const eyeOffSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
 
-  function showApp() {
-    document.getElementById('loginView').classList.remove('active');
-    document.getElementById('appView').classList.add('active');
-  }
-
-  function updateKeyDisplay() {
+  function updateUIState() {
+    // 마스킹 처리
     const keyEl = document.getElementById('profKey');
     const btn = document.getElementById('toggleKeyBtn');
     if(isKeyVisible) {
-      keyEl.textContent = currentProfile.key;
-      btn.innerHTML = eyeOffSvg;
+      keyEl.textContent = currentProfile.key; btn.innerHTML = eyeOffSvg;
     } else {
-      keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4);
-      btn.innerHTML = eyeOnSvg;
+      keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4); btn.innerHTML = eyeOnSvg;
+    }
+
+    // 사용량 및 남은 한도 계산
+    document.getElementById('profUsed').textContent = currentProfile.used.toLocaleString();
+    
+    if (currentProfile.role === 'admin') {
+      document.getElementById('profLimit').textContent = 'Unlimited';
+      document.getElementById('profRemain').textContent = 'Unlimited';
+      document.getElementById('profRemain').className = 'info-value text-green';
+    } else {
+      document.getElementById('profLimit').textContent = currentProfile.limit.toLocaleString();
+      const remain = Math.max(0, currentProfile.limit - currentProfile.used);
+      document.getElementById('profRemain').textContent = remain.toLocaleString();
+      // 남은 양이 0이면 빨간색, 남아있으면 초록색
+      document.getElementById('profRemain').className = remain === 0 ? 'info-value text-red' : 'info-value text-green';
     }
   }
 
+  // 1. 키 입력 자동 포맷팅
   document.getElementById('licenseInput').addEventListener('input', function() {
     let val = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     let formatted = '';
@@ -126,32 +181,31 @@
     if (e.key === 'Enter') document.getElementById('loginBtn').click();
   });
 
+  // 2. 탭 전환
   document.getElementById('navWorkspace').onclick = () => {
     document.getElementById('tabWorkspace').classList.add('active');
     document.getElementById('tabProfile').classList.remove('active');
-    document.getElementById('navWorkspace').style.background = '#1a1a1a';
-    document.getElementById('navWorkspace').style.color = '#fff';
-    document.getElementById('navProfile').style.background = 'none';
-    document.getElementById('navProfile').style.color = '#777';
+    document.getElementById('navWorkspace').classList.add('active');
+    document.getElementById('navProfile').classList.remove('active');
   };
   
   document.getElementById('navProfile').onclick = () => {
     document.getElementById('tabProfile').classList.add('active');
     document.getElementById('tabWorkspace').classList.remove('active');
-    document.getElementById('navProfile').style.background = '#1a1a1a';
-    document.getElementById('navProfile').style.color = '#fff';
-    document.getElementById('navWorkspace').style.background = 'none';
-    document.getElementById('navWorkspace').style.color = '#777';
+    document.getElementById('navProfile').classList.add('active');
+    document.getElementById('navWorkspace').classList.remove('active');
   };
 
   document.getElementById('toggleKeyBtn').onclick = () => {
     isKeyVisible = !isKeyVisible;
-    updateKeyDisplay();
+    updateUIState();
   };
 
+  // 3. 분석 실행
   document.getElementById('analyzeBtn').onclick = async () => {
     const text = document.getElementById('textInput').value.trim();
     if (!text) return alert('검사할 텍스트를 입력해주세요.');
+    
     const btn = document.getElementById('analyzeBtn');
     btn.textContent = "Analyzing..."; btn.disabled = true;
     
@@ -166,20 +220,22 @@
         document.getElementById('aiScore').textContent = data.aiScore + "%";
         document.getElementById('resultBox').style.display = "block";
         
-        // 탐지 후 UI 사용량 업데이트
+        // 탐지 성공 시 프로필의 사용량 즉각 업데이트
         if(data.updatedUsed !== undefined) {
-          document.getElementById('profUsed').textContent = data.updatedUsed.toLocaleString();
+          currentProfile.used = data.updatedUsed;
+          updateUIState();
         }
       } else {
-        if(res.status === 401) {
-            alert('인증이 만료되었습니다. 다시 로그인해주세요.');
-            document.getElementById('logoutBtn').click();
+        if(res.status === 401 || res.status === 403) {
+            alert(data.error || '권한이 없습니다.');
+            if(res.status === 401) document.getElementById('logoutBtn').click();
         } else alert(data.error || '분석 중 오류가 발생했습니다.');
       }
     } catch (err) { alert("서버 연결에 실패했습니다."); } 
     finally { btn.textContent = "Analyze (Ensemble Mode)"; btn.disabled = false; }
   };
 
+  // 4. 수동 로그인
   document.getElementById('loginBtn').onclick = async () => {
     const key = document.getElementById('licenseInput').value;
     if(key.length !== 19) return alert('16자리 키를 입력해주세요.');
@@ -192,21 +248,24 @@
       if (res.ok) { 
         const data = await res.json();
         localStorage.setItem('ai_license_key', key);
-        currentProfile = { key, limit: data.limit, used: data.used };
+        currentProfile = { key, limit: data.limit, used: data.used, role: data.role };
         
-        updateKeyDisplay();
-        document.getElementById('profLimit').textContent = data.role === 'admin' ? 'Unlimited' : data.limit.toLocaleString();
-        document.getElementById('profUsed').textContent = data.used.toLocaleString();
-        showApp();
+        updateUIState();
+        
+        document.getElementById('loginView').classList.remove('active');
+        document.getElementById('appView').classList.add('active');
       } else alert("유효하지 않은 라이선스 키입니다.");
     } catch(err) { alert("서버 연결에 실패했습니다."); } 
     finally { btn.textContent = 'Access'; btn.disabled = false; }
   };
 
+  // 5. 로그아웃
   document.getElementById('logoutBtn').onclick = () => { 
-    localStorage.removeItem('ai_license_key'); location.reload(); 
+    localStorage.removeItem('ai_license_key'); 
+    location.reload(); 
   };
 
+  // 6. 백그라운드 키 검증 (로그인 깜빡임 방지용)
   window.onload = async () => {
     const key = localStorage.getItem('ai_license_key');
     if (key) {
@@ -214,14 +273,16 @@
         const res = await fetch(`${API_BASE}/verify`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({licenseKey:key}) });
         if (res.ok) {
           const data = await res.json();
-          currentProfile = { key, limit: data.limit, used: data.used };
-          
-          updateKeyDisplay();
-          document.getElementById('profLimit').textContent = data.role === 'admin' ? 'Unlimited' : data.limit.toLocaleString();
-          document.getElementById('profUsed').textContent = data.used.toLocaleString();
-          showApp();
-        } else localStorage.removeItem('ai_license_key');
-      } catch(err) {}
+          currentProfile = { key, limit: data.limit, used: data.used, role: data.role };
+          updateUIState();
+        } else {
+          // 서버에서 키가 지워졌거나 유효기간이 끝난 경우 강제 로그아웃
+          localStorage.removeItem('ai_license_key');
+          location.reload();
+        }
+      } catch(err) {
+        // 일시적인 네트워크 오류 시에는 로그인 상태 유지
+      }
     }
   };
 </script>
