@@ -9,34 +9,35 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
     body { background-color: #050505; color: #ededed; height: 100vh; overflow: hidden; }
     
-    /* 레이아웃 제어 (수정된 부분) */
     .view { display: none !important; }
     .view.active { display: flex !important; }
     
-    /* 로그인 뷰 */
     #loginView { flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100%; }
     .login-box { width: 100%; max-width: 400px; padding: 32px; text-align: center; }
     .login-box h1 { font-size: 24px; font-weight: 700; margin-bottom: 32px; }
     
-    /* 입력 및 버튼 */
     input, textarea { width: 100%; background: #111; border: 1px solid #222; color: #fff; padding: 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; outline: none; }
     button { width: 100%; background: #fff; color: #000; padding: 16px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
     button:hover { opacity: 0.8; }
+    button:disabled { background: #333; color: #666; cursor: not-allowed; }
 
-    /* 대시보드 구조 */
     #appView { height: 100vh; width: 100%; flex-direction: row; }
     .sidebar { width: 240px; background: #0a0a0a; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 24px; }
     .main-content { flex: 1; padding: 48px; overflow-y: auto; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     
-    /* UI 요소 */
     .section-title { font-size: 18px; font-weight: 600; margin-bottom: 24px; }
     .result-box { margin-top: 24px; padding: 32px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; text-align: center; display: none; }
+    
+    /* 💡 프로필 UI 정렬 CSS 완벽 수정 */
     .profile-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 24px; }
-    .info-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #141414; }
-    .icon-btn { background: none; border: none; color: #555; cursor: pointer; padding: 4px; display: flex; align-items: center; }
-    .icon-btn:hover { color: #fff; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #141414; }
+    .info-label { color: #777; flex-shrink: 0; }
+    .license-wrap { display: flex; align-items: center; justify-content: flex-end; gap: 8px; white-space: nowrap; }
+    .info-value { font-family: monospace; font-size: 15px; color: #fff; letter-spacing: 0.5px; }
+    .icon-btn { background: transparent; border: none; color: #555; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 4px; transition: 0.2s; width: auto; }
+    .icon-btn:hover { color: #fff; background: #222; }
   </style>
 </head>
 <body>
@@ -71,17 +72,16 @@
     <div id="tabProfile" class="tab-content" style="max-width:700px; margin:0 auto">
       <h2 class="section-title">PROFILE</h2>
       <div class="profile-card">
+        <!-- 💡 4줄로 깨지던 UI를 1줄로 완벽하게 묶음 -->
         <div class="info-row">
-          <span style="color:#777;">License Key</span>
-          <div style="display:flex; align-items:center; gap:8px">
-            <span id="profKey" style="font-family:monospace; font-size:15px;">-</span>
-            <button id="toggleKeyBtn" class="icon-btn">
-              <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            </button>
+          <span class="info-label">License Key</span>
+          <div class="license-wrap">
+            <span id="profKey" class="info-value">-</span>
+            <button id="toggleKeyBtn" class="icon-btn" title="Toggle Visibility"></button>
           </div>
         </div>
-        <div class="info-row"><span style="color:#777;">Daily Limit</span><span id="profLimit" style="font-family:monospace; font-size:15px;">-</span></div>
-        <div class="info-row"><span style="color:#777;">Used Characters</span><span id="profUsed" style="font-family:monospace; font-size:15px;">-</span></div>
+        <div class="info-row"><span class="info-label">Daily Limit</span><span id="profLimit" class="info-value">-</span></div>
+        <div class="info-row"><span class="info-label">Used Characters</span><span id="profUsed" class="info-value">-</span></div>
       </div>
     </div>
   </div>
@@ -92,16 +92,26 @@
   let currentProfile = { key: '', limit: 0, used: 0 };
   let isKeyVisible = false;
 
-  const eyeOnSvg = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
-  const eyeOffSvg = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+  const eyeOnSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+  const eyeOffSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
 
-  // 화면 전환 함수
   function showApp() {
     document.getElementById('loginView').classList.remove('active');
     document.getElementById('appView').classList.add('active');
   }
 
-  // 1. 키 자동 포맷팅 (대문자 + 하이픈)
+  function updateKeyDisplay() {
+    const keyEl = document.getElementById('profKey');
+    const btn = document.getElementById('toggleKeyBtn');
+    if(isKeyVisible) {
+      keyEl.textContent = currentProfile.key;
+      btn.innerHTML = eyeOffSvg;
+    } else {
+      keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4);
+      btn.innerHTML = eyeOnSvg;
+    }
+  }
+
   document.getElementById('licenseInput').addEventListener('input', function() {
     let val = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     let formatted = '';
@@ -116,7 +126,6 @@
     if (e.key === 'Enter') document.getElementById('loginBtn').click();
   });
 
-  // 2. 탭 전환
   document.getElementById('navWorkspace').onclick = () => {
     document.getElementById('tabWorkspace').classList.add('active');
     document.getElementById('tabProfile').classList.remove('active');
@@ -135,22 +144,11 @@
     document.getElementById('navWorkspace').style.color = '#777';
   };
 
-  // 3. 키 마스킹 토글
   document.getElementById('toggleKeyBtn').onclick = () => {
     isKeyVisible = !isKeyVisible;
-    const keyEl = document.getElementById('profKey');
-    const eyeIcon = document.getElementById('eyeIcon');
-    
-    if(isKeyVisible) {
-      keyEl.textContent = currentProfile.key;
-      eyeIcon.innerHTML = eyeOffSvg;
-    } else {
-      keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4);
-      eyeIcon.innerHTML = eyeOnSvg;
-    }
+    updateKeyDisplay();
   };
 
-  // 4. 분석 실행
   document.getElementById('analyzeBtn').onclick = async () => {
     const text = document.getElementById('textInput').value.trim();
     if (!text) return alert('검사할 텍스트를 입력해주세요.');
@@ -159,8 +157,7 @@
     
     try {
       const res = await fetch(`${API_BASE}/detect`, { 
-        method: 'POST', 
-        headers: {'Content-Type': 'application/json'}, 
+        method: 'POST', headers: {'Content-Type': 'application/json'}, 
         body: JSON.stringify({ text, licenseKey: localStorage.getItem('ai_license_key') }) 
       });
       const data = await res.json();
@@ -168,22 +165,21 @@
       if (res.ok && data.success) {
         document.getElementById('aiScore').textContent = data.aiScore + "%";
         document.getElementById('resultBox').style.display = "block";
+        
+        // 탐지 후 UI 사용량 업데이트
+        if(data.updatedUsed !== undefined) {
+          document.getElementById('profUsed').textContent = data.updatedUsed.toLocaleString();
+        }
       } else {
         if(res.status === 401) {
             alert('인증이 만료되었습니다. 다시 로그인해주세요.');
             document.getElementById('logoutBtn').click();
-        } else {
-            alert(data.error || '분석 중 오류가 발생했습니다.');
-        }
+        } else alert(data.error || '분석 중 오류가 발생했습니다.');
       }
-    } catch (err) {
-      alert("서버 연결에 실패했습니다.");
-    } finally {
-      btn.textContent = "Analyze (Ensemble Mode)"; btn.disabled = false;
-    }
+    } catch (err) { alert("서버 연결에 실패했습니다."); } 
+    finally { btn.textContent = "Analyze (Ensemble Mode)"; btn.disabled = false; }
   };
 
-  // 5. 로그인 처리
   document.getElementById('loginBtn').onclick = async () => {
     const key = document.getElementById('licenseInput').value;
     if(key.length !== 19) return alert('16자리 키를 입력해주세요.');
@@ -198,28 +194,19 @@
         localStorage.setItem('ai_license_key', key);
         currentProfile = { key, limit: data.limit, used: data.used };
         
-        document.getElementById('profKey').textContent = '****-****-****-' + key.slice(-4);
+        updateKeyDisplay();
         document.getElementById('profLimit').textContent = data.role === 'admin' ? 'Unlimited' : data.limit.toLocaleString();
         document.getElementById('profUsed').textContent = data.used.toLocaleString();
-        
         showApp();
-      } else {
-        alert("유효하지 않은 라이선스 키입니다.");
-      }
-    } catch(err) {
-      alert("서버 연결에 실패했습니다.");
-    } finally {
-      btn.textContent = 'Access'; btn.disabled = false;
-    }
+      } else alert("유효하지 않은 라이선스 키입니다.");
+    } catch(err) { alert("서버 연결에 실패했습니다."); } 
+    finally { btn.textContent = 'Access'; btn.disabled = false; }
   };
 
-  // 6. 로그아웃
   document.getElementById('logoutBtn').onclick = () => { 
-    localStorage.removeItem('ai_license_key'); 
-    location.reload(); 
+    localStorage.removeItem('ai_license_key'); location.reload(); 
   };
 
-  // 7. 자동 로그인 (새로고침 시)
   window.onload = async () => {
     const key = localStorage.getItem('ai_license_key');
     if (key) {
@@ -229,18 +216,12 @@
           const data = await res.json();
           currentProfile = { key, limit: data.limit, used: data.used };
           
-          document.getElementById('profKey').textContent = '****-****-****-' + key.slice(-4);
+          updateKeyDisplay();
           document.getElementById('profLimit').textContent = data.role === 'admin' ? 'Unlimited' : data.limit.toLocaleString();
           document.getElementById('profUsed').textContent = data.used.toLocaleString();
-          
           showApp();
-        } else {
-          localStorage.removeItem('ai_license_key'); // 유효하지 않은 키면 스토리지에서 삭제
-        }
-      } catch(err) {
-        // 서버가 일시적으로 죽었을 때는 로그인 화면 유지
-        console.error("자동 로그인 실패", err);
-      }
+        } else localStorage.removeItem('ai_license_key');
+      } catch(err) {}
     }
   };
 </script>
