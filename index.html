@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI DETECTOR</title>
+  <title>ToolsX</title>
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-    
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
     body { background-color: #050505; color: #ededed; height: 100vh; overflow: hidden; display: flex; }
     
@@ -15,47 +14,50 @@
     
     #loginView { flex-direction: column; align-items: center; justify-content: center; background: #000; }
     .login-box { width: 100%; max-width: 380px; padding: 40px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-    .login-box h1 { font-size: 24px; font-weight: 700; margin-bottom: 32px; letter-spacing: 1px; }
+    .login-box h1 { font-size: 32px; font-weight: 800; margin-bottom: 32px; letter-spacing: 1px; color: #fff; }
     
-    input, textarea { width: 100%; background: #050505; border: 1px solid #222; color: #fff; padding: 18px; border-radius: 12px; font-size: 15px; outline: none; transition: border-color 0.2s; }
-    input { margin-bottom: 16px; }
-    input:focus, textarea:focus { border-color: #444; }
-    button { width: 100%; background: #fff; color: #000; padding: 18px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 16px; }
-    button:hover { opacity: 0.8; }
-    button:disabled { background: #333; color: #666; cursor: not-allowed; }
+    input[type="text"], textarea { width: 100%; background: #050505; border: 1px solid #222; color: #fff; padding: 18px; border-radius: 12px; font-size: 15px; outline: none; transition: border-color 0.2s; }
+    input[type="text"] { margin-bottom: 16px; }
+    input[type="text"]:focus, textarea:focus { border-color: #444; }
+    button.primary-btn { width: 100%; background: #fff; color: #000; padding: 18px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 16px; }
+    button.primary-btn:hover { opacity: 0.8; }
+    button.primary-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
 
     #appView { flex-direction: row; background: #000; }
-    
     .sidebar { width: 260px; background: #050505; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 32px 24px; height: 100%; }
-    .sidebar-brand { font-size: 18px; font-weight: 700; margin-bottom: 48px; padding-left: 12px; letter-spacing: 1px; }
-    .nav-btn { padding: 14px 16px; cursor: pointer; border-radius: 10px; margin-bottom: 8px; font-weight: 500; transition: all 0.2s; color: #777; background: transparent; }
+    .sidebar-brand { font-size: 24px; font-weight: 800; margin-bottom: 48px; padding-left: 12px; letter-spacing: 1px; color: #fff; }
+    .nav-section { font-size: 12px; color: #555; font-weight: 700; margin-bottom: 12px; padding-left: 12px; letter-spacing: 1px; }
+    .nav-btn { padding: 14px 16px; cursor: pointer; border-radius: 10px; margin-bottom: 8px; font-weight: 500; transition: all 0.2s; color: #777; background: transparent; display: flex; align-items: center; gap: 10px; }
     .nav-btn.active { background: #1a1a1a; color: #fff; font-weight: 600; }
-    .nav-btn:hover:not(.active) { color: #ccc; }
-    
+    .nav-btn:hover:not(.active) { color: #ccc; background: #111; }
     #logoutBtn { margin-top: auto; color: #ff4d4d; border: 1px solid #2a1111; background: transparent; text-align: left; padding-left: 16px; }
     #logoutBtn:hover { background: #1a0a0a; }
 
     .main-content { flex: 1; display: flex; justify-content: center; padding: 48px 24px; overflow-y: auto; }
-    .content-container { width: 100%; max-width: 720px; }
-    
+    .content-container { width: 100%; max-width: 760px; }
     .tab-content { display: none; width: 100%; }
     .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+    .section-title { font-size: 22px; font-weight: 700; margin-bottom: 32px; letter-spacing: 0.5px; }
     
-    .section-title { font-size: 20px; font-weight: 700; margin-bottom: 32px; letter-spacing: 0.5px; }
-    
-    /* 💡 텍스트 에어리어 래퍼 및 실시간 글자수 카운터 스타일 */
     .textarea-wrapper { position: relative; width: 100%; margin-bottom: 24px; }
     .char-counter { text-align: right; font-size: 13px; color: #777; padding-top: 8px; padding-right: 4px; letter-spacing: 0.5px; }
     .char-counter strong { color: #fff; font-weight: 700; font-family: monospace; font-size: 15px; margin: 0 2px; }
+    .result-box { margin-top: 32px; padding: 40px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; text-align: center; display: none; }
     
-    .result-box { margin-top: 32px; padding: 40px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; text-align: center; display: none; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+    .drop-zone { border: 2px dashed #333; border-radius: 16px; padding: 64px 32px; text-align: center; background: #0a0a0a; transition: all 0.2s; cursor: pointer; margin-bottom: 24px; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: #666; background: #111; }
+    .drop-icon { font-size: 48px; margin-bottom: 16px; }
+    .drop-text { color: #888; font-size: 15px; }
+    .drop-text strong { color: #fff; }
+    .file-info { display: none; margin-top: 24px; padding: 24px; background: #111; border-radius: 12px; border: 1px solid #222; text-align: left; }
+    .file-info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+    .file-info-row span:first-child { color: #777; }
+    
     .profile-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; padding: 32px; }
-    
     .info-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid #141414; }
     .info-row:last-child { border-bottom: none; padding-bottom: 0; }
     .info-label { color: #777; font-size: 14px; flex-shrink: 0; }
     .info-value { font-family: monospace; font-size: 15px; color: #fff; letter-spacing: 0.5px; }
-    
     .license-wrap { display: flex; align-items: center; justify-content: flex-end; gap: 8px; white-space: nowrap; }
     .icon-btn { background: #111; border: 1px solid #222; color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 6px; width: auto; }
     .icon-btn:hover { color: #fff; border-color: #444; }
@@ -70,46 +72,58 @@
 
 <div id="loginView" class="view">
   <div class="login-box">
-    <h1>AI DETECTOR</h1>
+    <h1>ToolsX</h1>
     <input type="text" id="licenseInput" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19" style="text-align:center; font-family:monospace; letter-spacing:1px;" autocomplete="off" spellcheck="false">
-    <button id="loginBtn">Access</button>
+    <button id="loginBtn" class="primary-btn">Access Toolkit</button>
   </div>
 </div>
 
 <div id="appView" class="view">
   <div class="sidebar">
-    <div class="sidebar-brand">DETECTOR</div>
-    <div id="navWorkspace" class="nav-btn active">Workspace</div>
-    <div id="navProfile" class="nav-btn">Profile</div>
-    <button id="logoutBtn">➜ Logout</button>
+    <div class="sidebar-brand">ToolsX</div>
+    <div class="nav-section">TOOLS</div>
+    <div id="navAi" class="nav-btn active">🤖 AI Detector</div>
+    <div id="navPdf" class="nav-btn">📄 Extreme PDF Compressor</div>
+    <div class="nav-section" style="margin-top: 32px;">ACCOUNT</div>
+    <div id="navProfile" class="nav-btn">👤 Profile & Usage</div>
+    <button id="logoutBtn" class="primary-btn">➜ Logout</button>
   </div>
   
   <div class="main-content">
     <div class="content-container">
       
-      <!-- Workspace 탭 -->
-      <div id="tabWorkspace" class="tab-content active">
-        <h2 class="section-title">WORKSPACE</h2>
-        
-        <!-- 💡 글자수 카운터가 포함된 텍스트 영역 -->
+      <div id="tabAi" class="tab-content active">
+        <h2 class="section-title">AI Detector</h2>
         <div class="textarea-wrapper">
           <textarea id="textInput" style="height:320px; resize:none; line-height:1.7; margin-bottom:0;" placeholder="검사할 텍스트를 붙여넣으세요..."></textarea>
           <div class="char-counter">
             공백 포함 <strong id="charCount">0</strong> 자 <span style="margin: 0 8px; color: #333;">|</span> 공백 제외 <strong id="charNoSpaceCount">0</strong> 자
           </div>
         </div>
-
-        <button id="analyzeBtn" style="margin-top:0;">Analyze (Ensemble Mode)</button>
-        
+        <button id="analyzeBtn" class="primary-btn" style="margin-top:0;">Analyze Text</button>
         <div id="resultBox" class="result-box">
           <div style="font-size:13px; color:#777; margin-bottom:16px; letter-spacing:1.5px; font-weight:600;">AI PROBABILITY</div>
           <div id="aiScore" style="font-size:56px; font-weight:800; color:#fff;">0%</div>
         </div>
       </div>
 
-      <!-- Profile 탭 -->
+      <div id="tabPdf" class="tab-content">
+        <h2 class="section-title">Extreme PDF Compressor</h2>
+        <div class="drop-zone" id="pdfDropZone">
+          <div class="drop-icon">📄</div>
+          <div class="drop-text"><strong>클릭</strong>하거나 PDF 파일을 이곳에 드롭하세요<br><span style="font-size:12px; color:#555; margin-top:8px; display:block;">(Ghostscript 엔진으로 고성능 압축을 수행합니다)</span></div>
+          <input type="file" id="pdfInput" accept="application/pdf" style="display:none">
+        </div>
+
+        <div id="pdfFileInfo" class="file-info">
+          <div class="file-info-row"><span>파일명:</span> <strong id="pdfFileName">-</strong></div>
+          <div class="file-info-row"><span>원본 크기:</span> <strong id="pdfFileSize">-</strong></div>
+        </div>
+        <button id="compressPdfBtn" class="primary-btn" style="display: none;">Upload & Compress PDF</button>
+      </div>
+
       <div id="tabProfile" class="tab-content">
-        <h2 class="section-title">PROFILE</h2>
+        <h2 class="section-title">Profile & Usage</h2>
         <div class="profile-card">
           <div class="info-row">
             <span class="info-label">License Key</span>
@@ -132,13 +146,12 @@
 </div>
 
 <script>
-  if (localStorage.getItem('ai_license_key')) {
-    document.getElementById('appView').classList.add('active');
-  } else {
-    document.getElementById('loginView').classList.add('active');
-  }
+  if (localStorage.getItem('ai_license_key')) { document.getElementById('appView').classList.add('active'); } 
+  else { document.getElementById('loginView').classList.add('active'); }
 
-  const API_BASE = "https://atio.onrender.com/api";
+  // 💡 API 베이스 주소 설정
+  const API_BASE = "https://toolsx.onrender.com/api"; 
+  
   let currentProfile = { key: '', limit: 0, used: 0, role: 'user' };
   let isKeyVisible = false;
 
@@ -148,11 +161,8 @@
   function updateUIState() {
     const keyEl = document.getElementById('profKey');
     const btn = document.getElementById('toggleKeyBtn');
-    if(isKeyVisible) {
-      keyEl.textContent = currentProfile.key; btn.innerHTML = eyeOffSvg;
-    } else {
-      keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4); btn.innerHTML = eyeOnSvg;
-    }
+    if(isKeyVisible) { keyEl.textContent = currentProfile.key; btn.innerHTML = eyeOffSvg; } 
+    else { keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4); btn.innerHTML = eyeOnSvg; }
 
     document.getElementById('profUsed').textContent = currentProfile.used.toLocaleString();
     if (currentProfile.role === 'admin') {
@@ -167,19 +177,16 @@
     }
   }
 
-  // 💡 마우스 복사/붙여넣기, 키보드 입력 모든 상황에 0.1초만에 반응하는 실시간 글자수 계산 함수
   const updateCharCount = () => {
     const text = document.getElementById('textInput').value;
     document.getElementById('charCount').textContent = text.length.toLocaleString();
     document.getElementById('charNoSpaceCount').textContent = text.replace(/\s+/g, '').length.toLocaleString();
   };
-
   const textInput = document.getElementById('textInput');
   textInput.addEventListener('input', updateCharCount);
   textInput.addEventListener('keyup', updateCharCount);
-  textInput.addEventListener('paste', () => setTimeout(updateCharCount, 10)); // 붙여넣기 즉시 반영을 위해 10ms 딜레이 적용
+  textInput.addEventListener('paste', () => setTimeout(updateCharCount, 10));
 
-  // 라이선스 키 입력 포맷팅
   document.getElementById('licenseInput').addEventListener('input', function() {
     let val = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     let formatted = '';
@@ -189,34 +196,26 @@
     }
     this.value = formatted;
   });
-
   document.getElementById('licenseInput').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') document.getElementById('loginBtn').click();
   });
 
-  document.getElementById('navWorkspace').onclick = () => {
-    document.getElementById('tabWorkspace').classList.add('active');
-    document.getElementById('tabProfile').classList.remove('active');
-    document.getElementById('navWorkspace').classList.add('active');
-    document.getElementById('navProfile').classList.remove('active');
-  };
-  
-  document.getElementById('navProfile').onclick = () => {
-    document.getElementById('tabProfile').classList.add('active');
-    document.getElementById('tabWorkspace').classList.remove('active');
-    document.getElementById('navProfile').classList.add('active');
-    document.getElementById('navWorkspace').classList.remove('active');
-  };
+  const navIds = ['navAi', 'navPdf', 'navProfile'];
+  const tabIds = ['tabAi', 'tabPdf', 'tabProfile'];
+  navIds.forEach((navId, index) => {
+    document.getElementById(navId).onclick = () => {
+      tabIds.forEach(id => document.getElementById(id).classList.remove('active'));
+      document.getElementById(tabIds[index]).classList.add('active');
+      navIds.forEach(id => document.getElementById(id).classList.remove('active'));
+      document.getElementById(navId).classList.add('active');
+    };
+  });
 
-  document.getElementById('toggleKeyBtn').onclick = () => {
-    isKeyVisible = !isKeyVisible;
-    updateUIState();
-  };
+  document.getElementById('toggleKeyBtn').onclick = () => { isKeyVisible = !isKeyVisible; updateUIState(); };
 
   document.getElementById('analyzeBtn').onclick = async () => {
     const text = document.getElementById('textInput').value.trim();
     if (!text) return alert('검사할 텍스트를 입력해주세요.');
-    
     const btn = document.getElementById('analyzeBtn');
     btn.textContent = "Analyzing..."; btn.disabled = true;
     
@@ -231,8 +230,7 @@
         document.getElementById('aiScore').textContent = data.aiScore + "%";
         document.getElementById('resultBox').style.display = "block";
         if(data.updatedUsed !== undefined) {
-          currentProfile.used = data.updatedUsed;
-          updateUIState();
+          currentProfile.used = data.updatedUsed; updateUIState();
         }
       } else {
         if(res.status === 401 || res.status === 403) {
@@ -241,13 +239,68 @@
         } else alert(data.error || '분석 중 오류가 발생했습니다.');
       }
     } catch (err) { alert("서버 연결에 실패했습니다."); } 
-    finally { btn.textContent = "Analyze (Ensemble Mode)"; btn.disabled = false; }
+    finally { btn.textContent = "Analyze Text"; btn.disabled = false; }
+  };
+
+  const pdfDropZone = document.getElementById('pdfDropZone');
+  const pdfInput = document.getElementById('pdfInput');
+  const compressPdfBtn = document.getElementById('compressPdfBtn');
+  let currentPdfFile = null;
+
+  pdfDropZone.addEventListener('click', () => pdfInput.click());
+  pdfDropZone.addEventListener('dragover', (e) => { e.preventDefault(); pdfDropZone.classList.add('dragover'); });
+  pdfDropZone.addEventListener('dragleave', () => pdfDropZone.classList.remove('dragover'));
+  pdfDropZone.addEventListener('drop', (e) => {
+    e.preventDefault(); pdfDropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handlePdfSelection(e.dataTransfer.files[0]);
+  });
+  pdfInput.addEventListener('change', (e) => {
+    if (e.target.files.length) handlePdfSelection(e.target.files[0]);
+  });
+
+  function handlePdfSelection(file) {
+    if (file.type !== "application/pdf") return alert("PDF 파일만 업로드 가능합니다.");
+    currentPdfFile = file;
+    document.getElementById('pdfFileName').textContent = file.name;
+    document.getElementById('pdfFileSize').textContent = (file.size / 1024 / 1024).toFixed(2) + " MB";
+    document.getElementById('pdfFileInfo').style.display = "block";
+    compressPdfBtn.style.display = "block";
+  }
+
+  compressPdfBtn.onclick = async () => {
+    if (!currentPdfFile) return;
+    compressPdfBtn.textContent = "Compressing on Server..."; 
+    compressPdfBtn.disabled = true;
+
+    try {
+      const formData = new FormData();
+      formData.append('pdf', currentPdfFile);
+
+      const res = await fetch(`${API_BASE}/compress`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) throw new Error("서버에서 압축을 실패했습니다.");
+
+      const blob = await res.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = "compressed_" + currentPdfFile.name;
+      link.click();
+      
+      alert(`압축 성공! 브라우저 다운로드함을 확인해주세요.`);
+    } catch (e) {
+      alert("PDF 압축 중 오류가 발생했습니다.");
+    } finally {
+      compressPdfBtn.textContent = "Upload & Compress PDF"; 
+      compressPdfBtn.disabled = false;
+    }
   };
 
   document.getElementById('loginBtn').onclick = async () => {
     const key = document.getElementById('licenseInput').value;
     if(key.length !== 19) return alert('16자리 키를 입력해주세요.');
-    
     const btn = document.getElementById('loginBtn');
     btn.textContent = 'Verifying...'; btn.disabled = true;
 
@@ -257,20 +310,15 @@
         const data = await res.json();
         localStorage.setItem('ai_license_key', key);
         currentProfile = { key, limit: data.limit, used: data.used, role: data.role };
-        
         updateUIState();
-        
         document.getElementById('loginView').classList.remove('active');
         document.getElementById('appView').classList.add('active');
       } else alert("유효하지 않은 라이선스 키입니다.");
     } catch(err) { alert("서버 연결에 실패했습니다."); } 
-    finally { btn.textContent = 'Access'; btn.disabled = false; }
+    finally { btn.textContent = 'Access Toolkit'; btn.disabled = false; }
   };
 
-  document.getElementById('logoutBtn').onclick = () => { 
-    localStorage.removeItem('ai_license_key'); 
-    location.reload(); 
-  };
+  document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('ai_license_key'); location.reload(); };
 
   window.onload = async () => {
     const key = localStorage.getItem('ai_license_key');
@@ -281,10 +329,7 @@
           const data = await res.json();
           currentProfile = { key, limit: data.limit, used: data.used, role: data.role };
           updateUIState();
-        } else {
-          localStorage.removeItem('ai_license_key');
-          location.reload();
-        }
+        } else { localStorage.removeItem('ai_license_key'); location.reload(); }
       } catch(err) {}
     }
   };
