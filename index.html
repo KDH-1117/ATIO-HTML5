@@ -24,48 +24,31 @@
     button.primary-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
 
     #appView { flex-direction: row; background: #000; }
-    .sidebar { width: 260px; background: #050505; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 32px 24px; height: 100%; }
-    .sidebar-brand { font-size: 24px; font-weight: 800; margin-bottom: 48px; padding-left: 12px; letter-spacing: 1px; color: #fff; }
-    .nav-section { font-size: 12px; color: #555; font-weight: 700; margin-bottom: 12px; padding-left: 12px; letter-spacing: 1px; }
-    .nav-btn { padding: 14px 16px; cursor: pointer; border-radius: 10px; margin-bottom: 8px; font-weight: 500; transition: all 0.2s; color: #777; background: transparent; display: flex; align-items: center; gap: 10px; }
-    .nav-btn.active { background: #1a1a1a; color: #fff; font-weight: 600; }
+    .sidebar { width: 220px; background: #050505; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 32px 24px; height: 100%; }
+    .sidebar-brand { font-size: 20px; font-weight: 800; margin-bottom: 48px; color: #fff; }
+    .nav-section { font-size: 11px; color: #444; font-weight: 700; margin-bottom: 12px; letter-spacing: 1px; }
+    .nav-btn { padding: 12px 16px; cursor: pointer; border-radius: 8px; margin-bottom: 4px; font-weight: 500; transition: all 0.2s; color: #777; }
+    .nav-btn.active { background: #1a1a1a; color: #fff; }
     .nav-btn:hover:not(.active) { color: #ccc; background: #111; }
-    #logoutBtn { margin-top: auto; color: #ff4d4d; border: 1px solid #2a1111; background: transparent; text-align: left; padding-left: 16px; }
+    #logoutBtn { margin-top: auto; color: #ff4d4d; border: 1px solid #2a1111; background: transparent; text-align: left; }
     #logoutBtn:hover { background: #1a0a0a; }
 
     .main-content { flex: 1; display: flex; justify-content: center; padding: 48px 24px; overflow-y: auto; }
-    .content-container { width: 100%; max-width: 760px; }
+    .content-container { width: 100%; max-width: 600px; }
     .tab-content { display: none; width: 100%; }
-    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-    .section-title { font-size: 22px; font-weight: 700; margin-bottom: 32px; letter-spacing: 0.5px; }
+    .tab-content.active { display: block; }
+    .section-title { font-size: 20px; font-weight: 700; margin-bottom: 32px; }
     
-    .textarea-wrapper { position: relative; width: 100%; margin-bottom: 24px; }
-    .char-counter { text-align: right; font-size: 13px; color: #777; padding-top: 8px; padding-right: 4px; letter-spacing: 0.5px; }
-    .char-counter strong { color: #fff; font-weight: 700; font-family: monospace; font-size: 15px; margin: 0 2px; }
-    .result-box { margin-top: 32px; padding: 40px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; text-align: center; display: none; }
+    .char-counter { text-align: right; font-size: 13px; color: #777; padding-top: 8px; }
+    .result-box { margin-top: 24px; padding: 32px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px; text-align: center; display: none; }
     
-    .drop-zone { border: 2px dashed #333; border-radius: 16px; padding: 64px 32px; text-align: center; background: #0a0a0a; transition: all 0.2s; cursor: pointer; margin-bottom: 24px; }
-    .drop-zone:hover, .drop-zone.dragover { border-color: #666; background: #111; }
-    .drop-icon { font-size: 48px; margin-bottom: 16px; }
-    .drop-text { color: #888; font-size: 15px; }
-    .drop-text strong { color: #fff; }
-    .file-info { display: none; margin-top: 24px; padding: 24px; background: #111; border-radius: 12px; border: 1px solid #222; text-align: left; }
-    .file-info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
-    .file-info-row span:first-child { color: #777; }
+    .drop-zone { border: 2px dashed #333; border-radius: 12px; padding: 48px 32px; text-align: center; background: #0a0a0a; cursor: pointer; }
+    .file-info { display: none; margin-top: 24px; padding: 20px; background: #111; border-radius: 8px; font-size: 14px; }
+    .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
     
-    .profile-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; padding: 32px; }
-    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid #141414; }
-    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .info-label { color: #777; font-size: 14px; flex-shrink: 0; }
-    .info-value { font-family: monospace; font-size: 15px; color: #fff; letter-spacing: 0.5px; }
-    .license-wrap { display: flex; align-items: center; justify-content: flex-end; gap: 8px; white-space: nowrap; }
-    .icon-btn { background: #111; border: 1px solid #222; color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 6px; width: auto; }
-    .icon-btn:hover { color: #fff; border-color: #444; }
-    
-    .text-green { color: #4ade80 !important; font-weight: 700; }
-    .text-red { color: #ff4d4d !important; font-weight: 700; }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .profile-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px; padding: 24px; }
+    .info-row-profile { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #1a1a1a; }
+    .text-green { color: #4ade80; }
   </style>
 </head>
 <body>
@@ -73,8 +56,8 @@
 <div id="loginView" class="view">
   <div class="login-box">
     <h1>ToolsX</h1>
-    <input type="text" id="licenseInput" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19" style="text-align:center; font-family:monospace; letter-spacing:1px;" autocomplete="off" spellcheck="false">
-    <button id="loginBtn" class="primary-btn">Access Toolkit</button>
+    <input type="text" id="licenseInput" placeholder="라이선스 키 입력" maxlength="19" style="text-align:center; font-family:monospace;">
+    <button id="loginBtn" class="primary-btn">로그인</button>
   </div>
 </div>
 
@@ -82,11 +65,11 @@
   <div class="sidebar">
     <div class="sidebar-brand">ToolsX</div>
     <div class="nav-section">TOOLS</div>
-    <div id="navAi" class="nav-btn active">🤖 AI Detector</div>
-    <div id="navPdf" class="nav-btn">📄 Extreme PDF Compressor</div>
+    <div id="navAi" class="nav-btn active">AI Detector</div>
+    <div id="navPdf" class="nav-btn">PDF Compressor</div>
     <div class="nav-section" style="margin-top: 32px;">ACCOUNT</div>
-    <div id="navProfile" class="nav-btn">👤 Profile & Usage</div>
-    <button id="logoutBtn" class="primary-btn">➜ Logout</button>
+    <div id="navProfile" class="nav-btn">Profile</div>
+    <button id="logoutBtn" class="primary-btn">로그아웃</button>
   </div>
   
   <div class="main-content">
@@ -94,50 +77,36 @@
       
       <div id="tabAi" class="tab-content active">
         <h2 class="section-title">AI Detector</h2>
-        <div class="textarea-wrapper">
-          <textarea id="textInput" style="height:320px; resize:none; line-height:1.7; margin-bottom:0;" placeholder="검사할 텍스트를 붙여넣으세요..."></textarea>
-          <div class="char-counter">
-            공백 포함 <strong id="charCount">0</strong> 자 <span style="margin: 0 8px; color: #333;">|</span> 공백 제외 <strong id="charNoSpaceCount">0</strong> 자
-          </div>
-        </div>
-        <button id="analyzeBtn" class="primary-btn" style="margin-top:0;">Analyze Text</button>
+        <textarea id="textInput" style="height:250px; resize:none; line-height:1.6;" placeholder="텍스트 입력"></textarea>
+        <div class="char-counter" id="charCounter">0자</div>
+        <button id="analyzeBtn" class="primary-btn">분석 시작</button>
         <div id="resultBox" class="result-box">
-          <div style="font-size:13px; color:#777; margin-bottom:16px; letter-spacing:1.5px; font-weight:600;">AI PROBABILITY</div>
-          <div id="aiScore" style="font-size:56px; font-weight:800; color:#fff;">0%</div>
+          <div style="font-size:12px; color:#777; margin-bottom:8px;">AI 작성 확률</div>
+          <div id="aiScore" style="font-size:48px; font-weight:800;">0%</div>
         </div>
       </div>
 
       <div id="tabPdf" class="tab-content">
-        <h2 class="section-title">Extreme PDF Compressor</h2>
-        <div class="drop-zone" id="pdfDropZone">
-          <div class="drop-icon">📄</div>
-          <div class="drop-text"><strong>클릭</strong>하거나 PDF 파일을 이곳에 드롭하세요<br><span style="font-size:12px; color:#555; margin-top:8px; display:block;">(Ghostscript 엔진으로 고성능 압축을 수행합니다)</span></div>
-          <input type="file" id="pdfInput" accept="application/pdf" style="display:none">
-        </div>
-
+        <h2 class="section-title">PDF Compressor</h2>
+        <div class="drop-zone" id="pdfDropZone">파일 선택</div>
+        <input type="file" id="pdfInput" accept="application/pdf" style="display:none">
         <div id="pdfFileInfo" class="file-info">
-          <div class="file-info-row"><span>파일명:</span> <strong id="pdfFileName">-</strong></div>
-          <div class="file-info-row"><span>원본 크기:</span> <strong id="pdfFileSize">-</strong></div>
+          <div class="info-row"><span>파일명:</span> <strong id="pdfFileName">-</strong></div>
+          <div class="info-row"><span>원본 크기:</span> <strong id="pdfFileSize">-</strong></div>
         </div>
-        <button id="compressPdfBtn" class="primary-btn" style="display: none;">Upload & Compress PDF</button>
+        <div id="pdfResult" class="file-info" style="border: 1px solid #333; margin-top: 16px;">
+            <div class="info-row"><span>압축 후 크기:</span> <strong id="resAfter">-</strong></div>
+            <div class="info-row"><span>압축률:</span> <strong id="resRate" class="text-green">-</strong></div>
+        </div>
+        <button id="compressPdfBtn" class="primary-btn" style="display: none;">압축 실행</button>
       </div>
 
       <div id="tabProfile" class="tab-content">
-        <h2 class="section-title">Profile & Usage</h2>
+        <h2 class="section-title">Profile</h2>
         <div class="profile-card">
-          <div class="info-row">
-            <span class="info-label">License Key</span>
-            <div class="license-wrap">
-              <span id="profKey" class="info-value">-</span>
-              <button id="toggleKeyBtn" class="icon-btn" title="Show/Hide"></button>
-            </div>
-          </div>
-          <div class="info-row"><span class="info-label">Daily Limit</span><span id="profLimit" class="info-value">-</span></div>
-          <div class="info-row"><span class="info-label">Used Characters</span><span id="profUsed" class="info-value">-</span></div>
-          <div class="info-row" style="margin-top: 16px; border-top: 1px solid #222; padding-top: 24px;">
-            <span class="info-label" style="color:#fff; font-weight:700; font-size:15px;">Remaining</span>
-            <span id="profRemain" class="info-value text-green">-</span>
-          </div>
+          <div class="info-row-profile"><span>키</span><span id="profKey">-</span></div>
+          <div class="info-row-profile"><span>일일 제한</span><span id="profLimit">-</span></div>
+          <div class="info-row-profile"><span>사용량</span><span id="profUsed">-</span></div>
         </div>
       </div>
 
@@ -149,190 +118,95 @@
   if (localStorage.getItem('ai_license_key')) { document.getElementById('appView').classList.add('active'); } 
   else { document.getElementById('loginView').classList.add('active'); }
 
-  // 💡 API 베이스 주소 설정
-  const API_BASE = "https://toolsx.onrender.com/api"; 
-  
+  const API_BASE = "https://toolsx.onrender.com/api";
   let currentProfile = { key: '', limit: 0, used: 0, role: 'user' };
-  let isKeyVisible = false;
 
-  const eyeOnSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
-  const eyeOffSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
-
-  function updateUIState() {
-    const keyEl = document.getElementById('profKey');
-    const btn = document.getElementById('toggleKeyBtn');
-    if(isKeyVisible) { keyEl.textContent = currentProfile.key; btn.innerHTML = eyeOffSvg; } 
-    else { keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4); btn.innerHTML = eyeOnSvg; }
-
-    document.getElementById('profUsed').textContent = currentProfile.used.toLocaleString();
-    if (currentProfile.role === 'admin') {
-      document.getElementById('profLimit').textContent = 'Unlimited';
-      document.getElementById('profRemain').textContent = 'Unlimited';
-      document.getElementById('profRemain').className = 'info-value text-green';
-    } else {
-      document.getElementById('profLimit').textContent = currentProfile.limit.toLocaleString();
-      const remain = Math.max(0, currentProfile.limit - currentProfile.used);
-      document.getElementById('profRemain').textContent = remain.toLocaleString();
-      document.getElementById('profRemain').className = remain === 0 ? 'info-value text-red' : 'info-value text-green';
-    }
-  }
-
-  const updateCharCount = () => {
-    const text = document.getElementById('textInput').value;
-    document.getElementById('charCount').textContent = text.length.toLocaleString();
-    document.getElementById('charNoSpaceCount').textContent = text.replace(/\s+/g, '').length.toLocaleString();
-  };
-  const textInput = document.getElementById('textInput');
-  textInput.addEventListener('input', updateCharCount);
-  textInput.addEventListener('keyup', updateCharCount);
-  textInput.addEventListener('paste', () => setTimeout(updateCharCount, 10));
-
-  document.getElementById('licenseInput').addEventListener('input', function() {
-    let val = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-    let formatted = '';
-    for (let i = 0; i < val.length; i++) {
-      if (i > 0 && i % 4 === 0) formatted += '-';
-      formatted += val[i];
-    }
-    this.value = formatted;
-  });
-  document.getElementById('licenseInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') document.getElementById('loginBtn').click();
+  // 텍스트 글자 수
+  document.getElementById('textInput').addEventListener('input', (e) => {
+    document.getElementById('charCounter').textContent = e.target.value.length.toLocaleString() + '자';
   });
 
+  // 탭 제어
   const navIds = ['navAi', 'navPdf', 'navProfile'];
   const tabIds = ['tabAi', 'tabPdf', 'tabProfile'];
-  navIds.forEach((navId, index) => {
-    document.getElementById(navId).onclick = () => {
-      tabIds.forEach(id => document.getElementById(id).classList.remove('active'));
-      document.getElementById(tabIds[index]).classList.add('active');
-      navIds.forEach(id => document.getElementById(id).classList.remove('active'));
-      document.getElementById(navId).classList.add('active');
+  navIds.forEach((nId, i) => {
+    document.getElementById(nId).onclick = () => {
+      tabIds.forEach(t => document.getElementById(t).classList.remove('active'));
+      navIds.forEach(n => document.getElementById(n).classList.remove('active'));
+      document.getElementById(tabIds[i]).classList.add('active');
+      document.getElementById(nId).classList.add('active');
     };
   });
 
-  document.getElementById('toggleKeyBtn').onclick = () => { isKeyVisible = !isKeyVisible; updateUIState(); };
-
+  // AI 분석
   document.getElementById('analyzeBtn').onclick = async () => {
     const text = document.getElementById('textInput').value.trim();
-    if (!text) return alert('검사할 텍스트를 입력해주세요.');
+    if (!text) return alert('텍스트를 입력하세요.');
     const btn = document.getElementById('analyzeBtn');
-    btn.textContent = "Analyzing..."; btn.disabled = true;
-    
+    btn.disabled = true; btn.textContent = "분석 중...";
     try {
       const res = await fetch(`${API_BASE}/detect`, { 
         method: 'POST', headers: {'Content-Type': 'application/json'}, 
         body: JSON.stringify({ text, licenseKey: localStorage.getItem('ai_license_key') }) 
       });
       const data = await res.json();
-      
-      if (res.ok && data.success) {
+      if (res.ok) {
         document.getElementById('aiScore').textContent = data.aiScore + "%";
         document.getElementById('resultBox').style.display = "block";
-        if(data.updatedUsed !== undefined) {
-          currentProfile.used = data.updatedUsed; updateUIState();
-        }
-      } else {
-        if(res.status === 401 || res.status === 403) {
-            alert(data.error || '권한이 없습니다.');
-            if(res.status === 401) document.getElementById('logoutBtn').click();
-        } else alert(data.error || '분석 중 오류가 발생했습니다.');
-      }
-    } catch (err) { alert("서버 연결에 실패했습니다."); } 
-    finally { btn.textContent = "Analyze Text"; btn.disabled = false; }
+      } else alert(data.error);
+    } catch (e) { alert("연결 실패"); } finally { btn.disabled = false; btn.textContent = "분석 시작"; }
   };
 
-  const pdfDropZone = document.getElementById('pdfDropZone');
+  // PDF 압축
   const pdfInput = document.getElementById('pdfInput');
-  const compressPdfBtn = document.getElementById('compressPdfBtn');
-  let currentPdfFile = null;
-
-  pdfDropZone.addEventListener('click', () => pdfInput.click());
-  pdfDropZone.addEventListener('dragover', (e) => { e.preventDefault(); pdfDropZone.classList.add('dragover'); });
-  pdfDropZone.addEventListener('dragleave', () => pdfDropZone.classList.remove('dragover'));
-  pdfDropZone.addEventListener('drop', (e) => {
-    e.preventDefault(); pdfDropZone.classList.remove('dragover');
-    if (e.dataTransfer.files.length) handlePdfSelection(e.dataTransfer.files[0]);
-  });
-  pdfInput.addEventListener('change', (e) => {
-    if (e.target.files.length) handlePdfSelection(e.target.files[0]);
-  });
-
-  function handlePdfSelection(file) {
-    if (file.type !== "application/pdf") return alert("PDF 파일만 업로드 가능합니다.");
-    currentPdfFile = file;
-    document.getElementById('pdfFileName').textContent = file.name;
-    document.getElementById('pdfFileSize').textContent = (file.size / 1024 / 1024).toFixed(2) + " MB";
-    document.getElementById('pdfFileInfo').style.display = "block";
-    compressPdfBtn.style.display = "block";
-  }
-
-  compressPdfBtn.onclick = async () => {
-    if (!currentPdfFile) return;
-    compressPdfBtn.textContent = "Compressing on Server..."; 
-    compressPdfBtn.disabled = true;
-
-    try {
-      const formData = new FormData();
-      formData.append('pdf', currentPdfFile);
-
-      const res = await fetch(`${API_BASE}/compress`, {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!res.ok) throw new Error("서버에서 압축을 실패했습니다.");
-
-      const blob = await res.blob();
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = "compressed_" + currentPdfFile.name;
-      link.click();
-      
-      alert(`압축 성공! 브라우저 다운로드함을 확인해주세요.`);
-    } catch (e) {
-      alert("PDF 압축 중 오류가 발생했습니다.");
-    } finally {
-      compressPdfBtn.textContent = "Upload & Compress PDF"; 
-      compressPdfBtn.disabled = false;
+  document.getElementById('pdfDropZone').onclick = () => pdfInput.click();
+  pdfInput.onchange = (e) => {
+    if(e.target.files[0]) {
+      const f = e.target.files[0];
+      document.getElementById('pdfFileName').textContent = f.name;
+      document.getElementById('pdfFileSize').textContent = (f.size / 1024 / 1024).toFixed(2) + " MB";
+      document.getElementById('pdfFileInfo').style.display = "block";
+      document.getElementById('compressPdfBtn').style.display = "block";
+      document.getElementById('pdfResult').style.display = "none";
     }
+  };
+
+  document.getElementById('compressPdfBtn').onclick = async () => {
+    const file = pdfInput.files[0];
+    const btn = document.getElementById('compressPdfBtn');
+    btn.disabled = true; btn.textContent = "압축 중...";
+    try {
+      const fd = new FormData(); fd.append('pdf', file);
+      const res = await fetch(`${API_BASE}/compress`, { method: 'POST', body: fd });
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = "compressed_" + file.name; a.click();
+      
+      // 결과 표시
+      document.getElementById('resAfter').textContent = (blob.size / 1024 / 1024).toFixed(2) + " MB";
+      const rate = ((1 - (blob.size / file.size)) * 100).toFixed(1);
+      document.getElementById('resRate').textContent = rate + "%";
+      document.getElementById('pdfResult').style.display = "block";
+    } catch(e) { alert("압축 실패"); } finally { btn.disabled = false; btn.textContent = "압축 실행"; }
   };
 
   document.getElementById('loginBtn').onclick = async () => {
     const key = document.getElementById('licenseInput').value;
-    if(key.length !== 19) return alert('16자리 키를 입력해주세요.');
-    const btn = document.getElementById('loginBtn');
-    btn.textContent = 'Verifying...'; btn.disabled = true;
-
     try {
       const res = await fetch(`${API_BASE}/verify`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({licenseKey:key}) });
       if (res.ok) { 
         const data = await res.json();
         localStorage.setItem('ai_license_key', key);
         currentProfile = { key, limit: data.limit, used: data.used, role: data.role };
-        updateUIState();
         document.getElementById('loginView').classList.remove('active');
         document.getElementById('appView').classList.add('active');
-      } else alert("유효하지 않은 라이선스 키입니다.");
-    } catch(err) { alert("서버 연결에 실패했습니다."); } 
-    finally { btn.textContent = 'Access Toolkit'; btn.disabled = false; }
+      } else alert("인증 실패");
+    } catch(e) { alert("연결 실패"); }
   };
 
   document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('ai_license_key'); location.reload(); };
-
-  window.onload = async () => {
-    const key = localStorage.getItem('ai_license_key');
-    if (key) {
-      try {
-        const res = await fetch(`${API_BASE}/verify`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({licenseKey:key}) });
-        if (res.ok) {
-          const data = await res.json();
-          currentProfile = { key, limit: data.limit, used: data.used, role: data.role };
-          updateUIState();
-        } else { localStorage.removeItem('ai_license_key'); location.reload(); }
-      } catch(err) {}
-    }
-  };
 </script>
 </body>
 </html>
