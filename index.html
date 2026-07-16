@@ -13,58 +13,38 @@
     .view.active { display: flex; }
     
     #loginView { flex-direction: column; align-items: center; justify-content: center; background: #000; }
-    .login-box { width: 100%; max-width: 380px; padding: 40px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-    .login-box h1 { font-size: 28px; font-weight: 800; margin-bottom: 32px; letter-spacing: 1px; color: #fff; }
+    .login-box { width: 100%; max-width: 380px; padding: 40px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px; text-align: center; }
+    .login-box h1 { font-size: 24px; font-weight: 700; margin-bottom: 32px; color: #fff; }
     
-    input[type="text"], textarea { width: 100%; background: #050505; border: 1px solid #222; color: #fff; padding: 18px; border-radius: 12px; font-size: 15px; outline: none; transition: border-color 0.2s; }
-    input[type="text"] { margin-bottom: 16px; }
-    input[type="text"]:focus, textarea:focus { border-color: #444; }
-    button.primary-btn { width: 100%; background: #fff; color: #000; padding: 18px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; margin-top: 16px; }
-    button.primary-btn:hover { opacity: 0.8; }
-    button.primary-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+    input[type="text"], textarea { width: 100%; background: #050505; border: 1px solid #222; color: #fff; padding: 16px; border-radius: 8px; font-size: 14px; outline: none; }
+    button.primary-btn { width: 100%; background: #fff; color: #000; padding: 16px; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 16px; }
+    button.primary-btn:hover { background: #eee; }
 
     #appView { flex-direction: row; background: #000; }
-    .sidebar { width: 260px; background: #050505; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 32px 24px; height: 100%; }
-    .sidebar-brand { font-size: 22px; font-weight: 800; margin-bottom: 48px; padding-left: 12px; letter-spacing: 1px; color: #fff; }
-    .nav-section { font-size: 12px; color: #555; font-weight: 700; margin-bottom: 12px; padding-left: 12px; letter-spacing: 1px; }
-    .nav-btn { padding: 14px 16px; cursor: pointer; border-radius: 10px; margin-bottom: 8px; font-weight: 500; transition: all 0.2s; color: #777; background: transparent; display: flex; align-items: center; gap: 10px; }
-    .nav-btn.active { background: #1a1a1a; color: #fff; font-weight: 600; }
-    .nav-btn:hover:not(.active) { color: #ccc; background: #111; }
-    #logoutBtn { margin-top: auto; color: #ff4d4d; border: 1px solid #2a1111; background: transparent; text-align: left; padding-left: 16px; }
-    #logoutBtn:hover { background: #1a0a0a; }
+    .sidebar { width: 220px; background: #050505; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; padding: 32px 20px; height: 100%; }
+    .sidebar-brand { font-size: 18px; font-weight: 700; margin-bottom: 40px; }
+    .nav-btn { padding: 12px; cursor: pointer; border-radius: 8px; margin-bottom: 4px; color: #666; font-size: 14px; }
+    .nav-btn.active { background: #1a1a1a; color: #fff; }
+    #logoutBtn { margin-top: auto; color: #ff4d4d; border: 1px solid #2a1111; background: transparent; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; }
 
-    .main-content { flex: 1; display: flex; justify-content: center; padding: 48px 24px; overflow-y: auto; }
-    .content-container { width: 100%; max-width: 760px; }
-    .tab-content { display: none; width: 100%; }
-    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-    .section-title { font-size: 22px; font-weight: 700; margin-bottom: 32px; letter-spacing: 0.5px; }
+    .main-content { flex: 1; display: flex; justify-content: center; padding: 48px; overflow-y: auto; }
+    .content-container { width: 100%; max-width: 600px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 24px; }
     
-    .textarea-wrapper { position: relative; width: 100%; margin-bottom: 24px; }
-    .char-counter { text-align: right; font-size: 13px; color: #777; padding-top: 8px; padding-right: 4px; letter-spacing: 0.5px; }
-    .char-counter strong { color: #fff; font-weight: 700; font-family: monospace; font-size: 15px; margin: 0 2px; }
-    .result-box { margin-top: 32px; padding: 40px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; text-align: center; display: none; }
+    .result-box { margin-top: 24px; padding: 32px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px; text-align: center; display: none; }
     
-    .drop-zone { border: 2px dashed #333; border-radius: 16px; padding: 64px 32px; text-align: center; background: #0a0a0a; transition: all 0.2s; cursor: pointer; margin-bottom: 24px; }
-    .drop-zone:hover, .drop-zone.dragover { border-color: #666; background: #111; }
-    .drop-text { color: #888; font-size: 15px; }
-    .drop-text strong { color: #fff; }
-    .file-info { display: none; margin-top: 24px; padding: 24px; background: #111; border-radius: 12px; border: 1px solid #222; text-align: left; }
-    .file-info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
-    .file-info-row span:first-child { color: #777; }
+    .drop-zone { border: 2px dashed #222; border-radius: 8px; padding: 48px; text-align: center; background: #0a0a0a; cursor: pointer; color: #666; font-size: 14px; }
+    .file-info { display: none; margin-top: 16px; padding: 16px; background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; }
+    .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
     
-    .profile-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 16px; padding: 32px; }
-    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid #141414; }
-    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .info-label { color: #777; font-size: 14px; flex-shrink: 0; }
-    .info-value { font-family: monospace; font-size: 15px; color: #fff; letter-spacing: 0.5px; }
-    .license-wrap { display: flex; align-items: center; justify-content: flex-end; gap: 8px; white-space: nowrap; }
-    .icon-btn { background: #111; border: 1px solid #222; color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 6px; width: auto; }
-    .icon-btn:hover { color: #fff; border-color: #444; }
-    
-    .text-green { color: #4ade80 !important; font-weight: 700; }
-    .text-red { color: #ff4d4d !important; font-weight: 700; }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .profile-card { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px; padding: 24px; }
+    .info-row-profile { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #1a1a1a; font-size: 14px; }
+    .text-green { color: #4ade80; }
+    .text-red { color: #ff4d4d; }
+    .icon-btn { background: #111; border: 1px solid #333; color: #fff; padding: 4px 12px; border-radius: 4px; cursor: pointer; margin-left: 12px; font-size: 12px; }
+    #profKey { color: #fff; font-family: monospace; }
   </style>
 </head>
 <body>
@@ -72,7 +52,7 @@
 <div id="loginView" class="view">
   <div class="login-box">
     <h1>ToolsX</h1>
-    <input type="text" id="licenseInput" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19" style="text-align:center; font-family:monospace; letter-spacing:1px;" autocomplete="off" spellcheck="false">
+    <input type="text" id="licenseInput" placeholder="라이선스 키" maxlength="19" style="text-align:center; font-family:monospace;">
     <button id="loginBtn" class="primary-btn">로그인</button>
   </div>
 </div>
@@ -80,12 +60,10 @@
 <div id="appView" class="view">
   <div class="sidebar">
     <div class="sidebar-brand">ToolsX</div>
-    <div class="nav-section">TOOLS</div>
     <div id="navAi" class="nav-btn active">AI Detector</div>
     <div id="navPdf" class="nav-btn">PDF Compressor</div>
-    <div class="nav-section" style="margin-top: 32px;">ACCOUNT</div>
     <div id="navProfile" class="nav-btn">Profile</div>
-    <button id="logoutBtn" class="primary-btn">로그아웃</button>
+    <button id="logoutBtn">로그아웃</button>
   </div>
   
   <div class="main-content">
@@ -93,55 +71,39 @@
       
       <div id="tabAi" class="tab-content active">
         <h2 class="section-title">AI Detector</h2>
-        <div class="textarea-wrapper">
-          <textarea id="textInput" style="height:320px; resize:none; line-height:1.7; margin-bottom:0;" placeholder="검사할 텍스트를 입력하세요."></textarea>
-          <div class="char-counter">
-            글자 수: <strong id="charCount">0</strong> 자
-          </div>
-        </div>
-        <button id="analyzeBtn" class="primary-btn" style="margin-top:0;">분석</button>
+        <textarea id="textInput" style="height:250px; resize:none; line-height:1.6;" placeholder="텍스트 입력"></textarea>
+        <button id="analyzeBtn" class="primary-btn">분석 시작</button>
         <div id="resultBox" class="result-box">
-          <div style="font-size:13px; color:#777; margin-bottom:16px; letter-spacing:1.5px; font-weight:600;">AI 작성 확률</div>
-          <div id="aiScore" style="font-size:56px; font-weight:800; color:#fff;">0%</div>
+          <div style="font-size:12px; color:#777; margin-bottom:8px;">AI 작성 확률</div>
+          <div id="aiScore" style="font-size:40px; font-weight:700;">0%</div>
         </div>
       </div>
 
       <div id="tabPdf" class="tab-content">
         <h2 class="section-title">PDF Compressor</h2>
-        <div class="drop-zone" id="pdfDropZone">
-          <div class="drop-text">PDF 파일 선택</div>
-          <input type="file" id="pdfInput" accept="application/pdf" style="display:none">
-        </div>
-
+        <div class="drop-zone" id="pdfDropZone">파일 선택</div>
+        <input type="file" id="pdfInput" accept="application/pdf" style="display:none">
         <div id="pdfFileInfo" class="file-info">
-          <div class="file-info-row"><span>파일명:</span> <strong id="pdfFileName">-</strong></div>
-          <div class="file-info-row"><span>원본 크기:</span> <strong id="pdfFileSize">-</strong></div>
+          <div class="info-row"><span>파일명:</span> <strong id="pdfFileName">-</strong></div>
+          <div class="info-row"><span>원본 크기:</span> <strong id="pdfFileSize">-</strong></div>
         </div>
-        
-        <div id="pdfResult" class="file-info" style="border: 1px solid #333;">
-            <div class="file-info-row"><span>압축 후 크기:</span> <strong id="resAfter">-</strong></div>
-            <div class="file-info-row"><span>압축률:</span> <strong id="resRate" class="text-green">-</strong></div>
+        <div id="pdfResult" class="file-info" style="border: 1px solid #333; margin-top: 16px;">
+            <div class="info-row"><span>압축 후:</span> <strong id="resAfter">-</strong></div>
+            <div class="info-row"><span>압축률:</span> <strong id="resRate" class="text-green">-</strong></div>
         </div>
-        
         <button id="compressPdfBtn" class="primary-btn" style="display: none;">압축 실행</button>
       </div>
 
       <div id="tabProfile" class="tab-content">
         <h2 class="section-title">Profile</h2>
         <div class="profile-card">
-          <div class="info-row">
-            <span class="info-label">라이선스 키</span>
-            <div class="license-wrap">
-              <span id="profKey" class="info-value">-</span>
-              <button id="toggleKeyBtn" class="icon-btn" title="보기/숨기기">보기</button>
-            </div>
+          <div class="info-row-profile">
+             <span>라이선스 키</span>
+             <div><span id="profKey">-</span> <button id="toggleKeyBtn" class="icon-btn">보기</button></div>
           </div>
-          <div class="info-row"><span class="info-label">일일 사용 제한</span><span id="profLimit" class="info-value">-</span></div>
-          <div class="info-row"><span class="info-label">사용량</span><span id="profUsed" class="info-value">-</span></div>
-          <div class="info-row" style="margin-top: 16px; border-top: 1px solid #222; padding-top: 24px;">
-            <span class="info-label" style="color:#fff; font-weight:700; font-size:15px;">남은 용량</span>
-            <span id="profRemain" class="info-value text-green">-</span>
-          </div>
+          <div class="info-row-profile"><span>일일 제한</span><span id="profLimit">-</span></div>
+          <div class="info-row-profile"><span>사용량</span><span id="profUsed">-</span></div>
+          <div class="info-row-profile"><span>남은 용량</span><span id="profRemain" class="text-green">-</span></div>
         </div>
       </div>
 
@@ -157,48 +119,22 @@
   let currentProfile = { key: '', limit: 0, used: 0, role: 'user' };
   let isKeyVisible = false;
 
-  function updateUIState() {
-    const keyEl = document.getElementById('profKey');
-    const btn = document.getElementById('toggleKeyBtn');
-    if(isKeyVisible) { keyEl.textContent = currentProfile.key; btn.textContent = '숨기기'; } 
-    else { keyEl.textContent = '****-****-****-' + currentProfile.key.slice(-4); btn.textContent = '보기'; }
-
-    document.getElementById('profUsed').textContent = currentProfile.used.toLocaleString();
-    if (currentProfile.role === 'admin') {
-      document.getElementById('profLimit').textContent = '무제한';
-      document.getElementById('profRemain').textContent = '무제한';
-      document.getElementById('profRemain').className = 'info-value text-green';
-    } else {
-      document.getElementById('profLimit').textContent = currentProfile.limit.toLocaleString();
-      const remain = Math.max(0, currentProfile.limit - currentProfile.used);
-      document.getElementById('profRemain').textContent = remain.toLocaleString();
-      document.getElementById('profRemain').className = remain === 0 ? 'info-value text-red' : 'info-value text-green';
-    }
-  }
-
-  const updateCharCount = () => {
-    document.getElementById('charCount').textContent = document.getElementById('textInput').value.length.toLocaleString();
-  };
-  document.getElementById('textInput').addEventListener('input', updateCharCount);
-
   const navIds = ['navAi', 'navPdf', 'navProfile'];
   const tabIds = ['tabAi', 'tabPdf', 'tabProfile'];
-  navIds.forEach((navId, index) => {
-    document.getElementById(navId).onclick = () => {
-      tabIds.forEach(id => document.getElementById(id).classList.remove('active'));
-      document.getElementById(tabIds[index]).classList.add('active');
-      navIds.forEach(id => document.getElementById(id).classList.remove('active'));
-      document.getElementById(navId).classList.add('active');
+  navIds.forEach((nId, i) => {
+    document.getElementById(nId).onclick = () => {
+      tabIds.forEach(t => document.getElementById(t).classList.remove('active'));
+      navIds.forEach(n => document.getElementById(n).classList.remove('active'));
+      document.getElementById(tabIds[i]).classList.add('active');
+      document.getElementById(nId).classList.add('active');
     };
   });
 
-  document.getElementById('toggleKeyBtn').onclick = () => { isKeyVisible = !isKeyVisible; updateUIState(); };
-
   document.getElementById('analyzeBtn').onclick = async () => {
     const text = document.getElementById('textInput').value.trim();
-    if (!text) return alert('텍스트를 입력해주세요.');
+    if (!text) return alert('텍스트를 입력하세요.');
     const btn = document.getElementById('analyzeBtn');
-    btn.textContent = "분석 중..."; btn.disabled = true;
+    btn.disabled = true; btn.textContent = "분석 중...";
     try {
       const res = await fetch(`${API_BASE}/detect`, { 
         method: 'POST', headers: {'Content-Type': 'application/json'}, 
@@ -208,16 +144,13 @@
       if (res.ok) {
         document.getElementById('aiScore').textContent = data.aiScore + "%";
         document.getElementById('resultBox').style.display = "block";
-        if(data.updatedUsed !== undefined) { currentProfile.used = data.updatedUsed; updateUIState(); }
       } else alert(data.error);
-    } catch (e) { alert("연결 실패"); } finally { btn.textContent = "분석"; btn.disabled = false; }
+    } catch (e) { alert("연결 실패"); } finally { btn.disabled = false; btn.textContent = "분석 시작"; }
   };
 
-  const pdfInput = document.getElementById('pdfInput');
-  document.getElementById('pdfDropZone').onclick = () => pdfInput.click();
-  pdfInput.onchange = (e) => {
-    if(e.target.files[0]) {
-      const f = e.target.files[0];
+  document.getElementById('pdfInput').onchange = (e) => {
+    const f = e.target.files[0];
+    if(f) {
       document.getElementById('pdfFileName').textContent = f.name;
       document.getElementById('pdfFileSize').textContent = (f.size / 1024 / 1024).toFixed(2) + " MB";
       document.getElementById('pdfFileInfo').style.display = "block";
@@ -225,11 +158,12 @@
       document.getElementById('pdfResult').style.display = "none";
     }
   };
+  document.getElementById('pdfDropZone').onclick = () => document.getElementById('pdfInput').click();
 
   document.getElementById('compressPdfBtn').onclick = async () => {
-    const file = pdfInput.files[0];
+    const file = document.getElementById('pdfInput').files[0];
     const btn = document.getElementById('compressPdfBtn');
-    btn.textContent = "압축 중..."; btn.disabled = true;
+    btn.disabled = true; btn.textContent = "압축 중...";
     try {
       const fd = new FormData(); fd.append('pdf', file);
       const res = await fetch(`${API_BASE}/compress`, { method: 'POST', body: fd });
@@ -242,7 +176,13 @@
       document.getElementById('resAfter').textContent = (blob.size / 1024 / 1024).toFixed(2) + " MB";
       document.getElementById('resRate').textContent = ((1 - (blob.size / file.size)) * 100).toFixed(1) + "%";
       document.getElementById('pdfResult').style.display = "block";
-    } catch(e) { alert("압축 실패"); } finally { btn.textContent = "압축 실행"; btn.disabled = false; }
+    } catch(e) { alert("압축 실패"); } finally { btn.disabled = false; btn.textContent = "압축 실행"; }
+  };
+
+  document.getElementById('toggleKeyBtn').onclick = () => {
+    isKeyVisible = !isKeyVisible;
+    document.getElementById('profKey').textContent = isKeyVisible ? currentProfile.key : '****-****-****-' + currentProfile.key.slice(-4);
+    document.getElementById('toggleKeyBtn').textContent = isKeyVisible ? '숨기기' : '보기';
   };
 
   document.getElementById('loginBtn').onclick = async () => {
@@ -252,7 +192,10 @@
       const data = await res.json();
       localStorage.setItem('ai_license_key', key);
       currentProfile = { key, limit: data.limit, used: data.used, role: data.role };
-      updateUIState();
+      document.getElementById('profKey').textContent = '****-****-****-' + key.slice(-4);
+      document.getElementById('profLimit').textContent = data.limit;
+      document.getElementById('profUsed').textContent = data.used;
+      document.getElementById('profRemain').textContent = data.limit - data.used;
       document.getElementById('loginView').classList.remove('active');
       document.getElementById('appView').classList.add('active');
     } else alert("인증 실패");
